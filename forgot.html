@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Forgot Password - NetRealTrain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        :root {
+            --primary: #0056b3;
+            --primary-dark: #003d82;
+            --secondary: #003366;
+            --accent: #00a8e8;
+            --accent-light: #e6f7ff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        body {
+            background: var(--accent-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--dark);
+        }
+        .forgot-container {
+            background: white;
+            padding: 2.5rem 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .forgot-header {
+            margin-bottom: 2rem;
+        }
+        .forgot-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 2rem;
+        }
+        p.instructions {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        label {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.3rem;
+            display: block;
+            text-align: left;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 5px var(--accent-light);
+        }
+        button.reset-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.85rem 1rem;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 6px 15px rgba(0, 86, 179, 0.4);
+        }
+        button.reset-btn:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 8px 20px rgba(0, 61, 130, 0.6);
+        }
+        .back-login {
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--gray);
+        }
+        .back-login a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .back-login a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        @media (max-width: 480px) {
+            .forgot-container {
+                padding: 2rem 1.5rem;
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="forgot-container" role="main" aria-label="Forgot Password Form">
+        <div class="forgot-header">
+            <h1>Forgot Password</h1>
+        </div>
+        <p class="instructions">Enter your User ID or Email below and we'll send you instructions to reset your password.</p>
+        <form action="#" method="POST" novalidate>
+            <div>
+                <label for="userid">User ID</label>
+                <input type="text" id="userid" name="userid" placeholder="Enter your User ID or Email Registered" required autocomplete="username" />
+            </div>
+            <button type="submit" class="reset-btn">Send Reset Instructions</button>
+        </form>
+        <div class="back-login">
+            Remembered your password? <a href="login.html">Log in here</a>
+        </div>
+        <footer style="text-align:center; margin-top:2rem; font-size:0.8rem; color: var(--gray); font-family: 'Roboto', sans-serif;">
+        &copy; 2025 Powered by NetIQ Technologies.
+        </footer>
+    </div>
+</body>
+</html>

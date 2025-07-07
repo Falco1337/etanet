@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - NetRealTrain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        :root {
+            --primary: #0056b3;
+            --primary-dark: #003d82;
+            --secondary: #003366;
+            --accent: #00a8e8;
+            --accent-light: #e6f7ff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        body {
+            background: var(--accent-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--dark);
+        }
+        .login-container {
+            background: white;
+            padding: 2.5rem 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .login-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 2rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        label {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 5px var(--accent-light);
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .forgot-register {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+        .forgot-register a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .forgot-register a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        button.login-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.85rem 1rem;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 6px 15px rgba(0, 86, 179, 0.4);
+        }
+        button.login-btn:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 8px 20px rgba(0, 61, 130, 0.6);
+        }
+        .social-login {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .social-login p {
+            margin-bottom: 1rem;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .social-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: var(--transition);
+            user-select: none;
+        }
+        .social-btn i {
+            font-size: 1.2rem;
+        }
+        .social-btn.gmail {
+            background: #db4437;
+            color: white;
+            border-color: #db4437;
+        }
+        .social-btn.gmail:hover {
+            background: #c33d2e;
+            border-color: #c33d2e;
+        }
+        .social-btn.apple {
+            background: #000000;
+            color: white;
+            border-color: #000000;
+        }
+        .social-btn.apple:hover {
+            background: #222222;
+            border-color: #222222;
+        }
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" role="main" aria-label="Login Form">
+        <button type="button" onclick="window.location.href='train.html'" style="margin-bottom: 1rem; background: var(--light-gray); border: none; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-weight: 600; color: var(--primary); transition: background 0.3s ease;">
+            &larr; Back
+        </button>
+        <form action="#" method="POST" novalidate>
+        <div class="login-header">
+            <h1>NetRealTrain Login</h1>
+        </div>
+            <div>
+                <label for="userid">User ID</label>
+                <input type="text" id="userid" name="userid" placeholder="Enter your user ID" required autocomplete="username" />
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password" />
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="remember" name="remember" />
+                <label for="remember">Remember Me</label>
+            </div>
+            <button type="submit" class="login-btn">Log In</button>
+            <div class="forgot-register">
+                <a href="forgot.html" aria-label="Forgot Password">Forgot Password?</a>
+                <a href="signup.html" aria-label="Register or Signup">Register / Signup</a>
+            </div>
+        </form>
+            <div class="social-login">
+                <p>Or log in with</p>
+                <div class="social-buttons">
+                    <button class="social-btn gmail" aria-label="Login with Gmail">
+                        <i class="fab fa-google"></i> Gmail
+                    </button>
+                    <button class="social-btn apple" aria-label="Login with Apple ID">
+                        <i class="fab fa-apple"></i> Apple ID
+                    </button>
+                </div>
+            </div>
+            <footer style="text-align:center; margin-top:2rem; font-size:0.8rem; color: var(--gray); font-family: 'Roboto', sans-serif;"> &copy; 2025 Powered by NetIQ Technologies.
+            </footer>
+    </div>
+</body>
+</html>

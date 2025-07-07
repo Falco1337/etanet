@@ -1,0 +1,4381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetRealTrain - Advanced Train Tracking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0056b3;
+            --primary-dark: #003d82;
+            --secondary: #003366;
+            --accent: #00a8e8;
+            --accent-light: #e6f7ff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --mrt-color: #9E2896;
+            --lrt-color: #FF7F00;
+            --ktm-color: #5CB335;
+            --monorail-color: #E31E24;
+            --elevation-1: 0 1px 3px rgba(0,0,0,0.12);
+            --elevation-2: 0 4px 6px rgba(0,0,0,0.1);
+            --elevation-3: 0 10px 20px rgba(0,0,0,0.1);
+            --elevation-4: 0 20px 40px rgba(0,0,0,0.15);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: var(--elevation-2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background-color: rgba(0, 86, 179, 0.9);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-family: 'Segoe UI', sans-serif, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo i {
+            font-size: 1.5rem;
+        }
+        
+        .nav-menu {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .nav-menu ul {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+        }
+        
+        .nav-menu ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .nav-menu ul li a:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .nav-menu ul li a.active {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .login-btn {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .login-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .signup-btn {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 168, 232, 0.3);
+        }
+        
+        .signup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 168, 232, 0.4);
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            width: 25px;
+            height: 20px;
+            justify-content: space-between;
+            z-index: 1001;
+        }
+        
+        .hamburger div {
+            height: 3px;
+            background-color: white;
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+        
+        .hamburger.active div:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        
+        .hamburger.active div:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger.active div:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+        
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: var(--elevation-3);
+            padding: 5rem 1.5rem;
+            z-index: 999;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+        
+        .mobile-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .mobile-menu ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        
+        .mobile-menu ul li a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .mobile-auth {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        main {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(0, 86, 179, 0.9), rgba(0, 51, 102, 0.9)), url('https://images.unsplash.com/photo-1519817650390-64a93db51149?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+            color: white;
+            box-shadow: var(--elevation-3);
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .typing-text {
+            border-right: 3px solid;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 3s steps(30) 1s 1 normal both, blink-caret 0.75s step-end infinite;
+            display: inline-block;
+            max-width: fit-content;
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--accent) }
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .search-bar {
+            width: 100%;
+            position: relative;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            box-shadow: var(--elevation-2);
+            transition: var(--transition);
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+            box-shadow: var(--elevation-3);
+        }
+        
+        .search-bar i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            z-index: 2;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 168, 232, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .primary-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 168, 232, 0.4);
+        }
+        
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .secondary-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+            box-shadow: var(--elevation-1);
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: var(--secondary);
+            position: relative;
+            padding-bottom: 0.8rem;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            border-radius: 2px;
+        }
+        
+        .train-activities {
+            margin-bottom: 4rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .view-all {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: var(--transition);
+        }
+        
+        .view-all:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .cards-container {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 1rem 0.5rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .cards-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .card {
+            flex: 0 0 320px;
+            background: white;
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: var(--elevation-2);
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--elevation-3);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.2rem;
+        }
+        
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .train-line {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .info-label i {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .info-value {
+            text-align: right;
+            font-weight: 500;
+        }
+        
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-arrived {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+        
+        .status-ontime {
+            background-color: rgba(0, 168, 232, 0.1);
+            color: var(--accent);
+        }
+        
+        .status-delayed {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .next-eta {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem;
+            background: var(--light);
+            border-radius: 8px;
+        }
+        
+        .next-eta i {
+            color: var(--primary);
+        }
+        
+        .current-train {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: var(--elevation-2);
+            margin-bottom: 4rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .train-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .train-title {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .train-number {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .train-route {
+            position: relative;
+            padding: 2rem 0;
+        }
+        
+        .route-line {
+            height: 6px;
+            background: var(--light-gray);
+            position: relative;
+            margin: 0 50px;
+            border-radius: 3px;
+        }
+        
+        .route-line-progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 65%;
+            background: linear-gradient(to right, var(--success), var(--accent));
+            border-radius: 3px;
+            animation: progress 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes progress {
+            0% { width: 65%; }
+            100% { width: 68%; }
+        }
+        
+        .stations {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: -12px;
+        }
+        
+        .station {
+            position: relative;
+            text-align: center;
+            width: 80px;
+        }
+        
+        .station-dot {
+            width: 20px;
+            height: 20px;
+            background: var(--light-gray);
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
+        }
+        
+        .station.passed .station-dot {
+            background: var(--success);
+            box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2);
+        }
+        
+        .station.current .station-dot {
+            background: var(--accent);
+            box-shadow: 0 0 0 8px rgba(0, 168, 232, 0.2);
+            animation: pulse-blue 2s infinite;
+            transform: scale(1.2);
+        }
+        
+        @keyframes pulse-blue {
+            0% { box-shadow: 0 0 0 0 rgba(0, 168, 232, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(0, 168, 232, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 168, 232, 0); }
+        }
+        
+        .station-name {
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .station.passed .station-name {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .station.current .station-name {
+            color: var(--primary);
+            font-weight: 700;
+            transform: scale(1.1);
+        }
+        
+        .station.next .station-name {
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .route-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            background: var(--accent-light);
+            padding: 1.2rem;
+            border-radius: 10px;
+        }
+        
+        .route-info-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .route-info-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+        
+        .route-info-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .route-info-value span {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray);
+            margin-left: 0.3rem;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--elevation-2);
+            transition: var(--transition);
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--elevation-3);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 10px 20px rgba(0, 168, 232, 0.2);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+        
+        .feature-card p {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+        
+        footer {
+            background: linear-gradient(135deg, var(--secondary), var(--dark));
+            color: white;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-about {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .footer-social a {
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .footer-social a:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-links h4::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--accent);
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links ul li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links ul li a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-links ul li a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .footer-newsletter p {
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+        
+        .newsletter-form {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+        
+        .newsletter-form input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 30px 0 0 30px;
+            font-size: 0.9rem;
+        }
+        
+        .newsletter-form input:focus {
+            outline: none;
+        }
+        
+        .newsletter-form button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0 30px 30px 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .newsletter-form button:hover {
+            background: var(--primary);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .real-time-clock {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: var(--elevation-3);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .real-time-clock i {
+            font-size: 1rem;
+        }
+        
+        .map-container {
+            height: 400px;
+            background: var(--light-gray);
+            border-radius: 15px;
+            margin-bottom: 4rem;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--elevation-2);
+        }
+        
+        .map-overlay {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: var(--elevation-1);
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .map-train-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .map-train-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .map-train-details h4 {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            color: var(--dark);
+        }
+        
+        .map-train-details p {
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .map-zoom-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .map-zoom-btn {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .map-zoom-btn:hover {
+            background: var(--light);
+        }
+        
+        .train-route-map {
+            width: 100%;
+            height: 100%;
+            background-color: #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .route-line-map {
+            position: absolute;
+            height: 6px;
+            background: var(--light-gray);
+            border-radius: 3px;
+            transform-origin: left center;
+        }
+        
+        .route-line-progress-map {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(to right, var(--success), var(--accent));
+            border-radius: 3px;
+            animation: progress 2s ease-in-out infinite alternate;
+        }
+        
+        .station-map {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--light-gray);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: var(--transition);
+            z-index: 2;
+        }
+        
+        .station-map.passed {
+            background: var(--success);
+            box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2);
+        }
+        
+        .station-map.current {
+            background: var(--accent);
+            box-shadow: 0 0 0 8px rgba(0, 168, 232, 0.2);
+            animation: pulse-blue 2s infinite;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        
+        .station-name-map {
+            position: absolute;
+            font-size: 0.8rem;
+            color: var(--gray);
+            font-weight: 500;
+            white-space: nowrap;
+            transform: translateX(-50%);
+            transition: var(--transition);
+        }
+        
+        .station-map.passed + .station-name-map {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .station-map.current + .station-name-map {
+            color: var(--primary);
+            font-weight: 700;
+            transform: translateX(-50%) scale(1.1);
+        }
+        
+        .train-icon-map {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            animation: pulse-blue 2s infinite;
+        }
+        
+        .assistant-bot {
+            position: fixed;
+            bottom: 2rem;
+            right: 6rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: var(--elevation-3);
+            z-index: 100;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .assistant-bot:hover {
+            transform: scale(1.1);
+            box-shadow: var(--elevation-4);
+        }
+        
+        .assistant-chat {
+            position: fixed;
+            bottom: 8rem;
+            right: 2rem;
+            width: 320px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--elevation-4);
+            z-index: 101;
+            overflow: hidden;
+            transform: scale(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+            opacity: 0;
+        }
+        
+        .assistant-chat.active {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .chat-header i {
+            font-size: 1.2rem;
+        }
+        
+        .chat-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            flex-grow: 1;
+        }
+        
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .chat-messages {
+            height: 300px;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            max-width: 80%;
+            padding: 0.8rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .bot-message {
+            background: var(--light);
+            color: var(--dark);
+            border-top-left-radius: 4px;
+            align-self: flex-start;
+        }
+        
+        .user-message {
+            background: var(--primary);
+            color: white;
+            border-top-right-radius: 4px;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 0.8rem;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .send-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .send-btn:hover {
+            background: var(--primary);
+        }
+        
+        .line-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .line-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .line-btn.active {
+            color: white;
+        }
+        
+        .line-btn.mrt {
+            background: rgba(158, 40, 150, 0.1);
+            color: var(--mrt-color);
+        }
+        
+        .line-btn.mrt.active {
+            background: var(--mrt-color);
+        }
+        
+        .line-btn.lrt {
+            background: rgba(255, 127, 0, 0.1);
+            color: var(--lrt-color);
+        }
+        
+        .line-btn.lrt.active {
+            background: var(--lrt-color);
+        }
+        
+        .line-btn.ktm {
+            background: rgba(92, 179, 53, 0.1);
+            color: var(--ktm-color);
+        }
+        
+        .line-btn.ktm.active {
+            background: var(--ktm-color);
+        }
+        
+        .line-btn.monorail {
+            background: rgba(227, 30, 36, 0.1);
+            color: var(--monorail-color);
+        }
+        
+        .line-btn.monorail.active {
+            background: var(--monorail-color);
+        }
+        
+        .notification-bell {
+            position: fixed;
+            bottom: 2rem;
+            right: 10rem;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--warning), #ff9500);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: var(--elevation-3);
+            z-index: 100;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .notification-bell:hover {
+            transform: scale(1.1);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .notification-panel {
+            position: fixed;
+            bottom: 7rem;
+            right: 10rem;
+            width: 300px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--elevation-4);
+            z-index: 101;
+            transform: scale(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+            opacity: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .notification-panel.active {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .notification-header {
+            background: linear-gradient(135deg, var(--warning), #ff9500);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+        }
+        
+        .notification-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+            transition: var(--transition);
+        }
+        
+        .notification-item:hover {
+            background: var(--light);
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--dark);
+        }
+        
+        .notification-message {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .notification-time {
+            font-size: 0.7rem;
+            color: var(--gray);
+            margin-top: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .train-progress-container {
+            margin-top: 1rem;
+            background: var(--light-gray);
+            border-radius: 5px;
+            height: 5px;
+            overflow: hidden;
+        }
+        
+        .train-progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--success), var(--accent));
+            width: 65%;
+            transition: width 0.5s ease;
+        }
+        
+        .train-progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .train-progress-eta {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .train-progress-label {
+            font-weight: 500;
+        }
+        
+        .train-progress-value {
+            font-weight: 600;
+        }
+        
+        .train-progress-dots {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            position: relative;
+            height: 20px;
+        }
+        
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--light-gray);
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .progress-dot.passed {
+            background: var(--success);
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+        }
+        
+        .progress-dot.current {
+            background: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0, 168, 232, 0.2);
+            animation: pulse-blue 2s infinite;
+            transform: scale(1.2);
+        }
+        
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--light-gray);
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        
+        .progress-line-active {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--success), var(--accent));
+            transform: translateY(-50%);
+            z-index: 1;
+            width: 65%;
+        }
+        
+        .progress-station-names {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-station-name {
+            font-size: 0.7rem;
+            color: var(--gray);
+            width: 80px;
+            text-align: center;
+        }
+        
+        .progress-station-name.current {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .progress-station-name.passed {
+            color: var(--success);
+            font-weight: 500;
+        }
+        
+        .progress-station-name.next {
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .train-arrival-prediction {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--elevation-1);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .prediction-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .prediction-accuracy {
+            font-size: 0.8rem;
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .prediction-times {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        
+        .prediction-time {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .prediction-time-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 0.3rem;
+        }
+        
+        .prediction-time-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .prediction-time-value.early {
+            color: var(--success);
+        }
+        
+        .prediction-time-value.late {
+            color: var(--danger);
+        }
+        
+        .prediction-time-value.on-time {
+            color: var(--accent);
+        }
+        
+        .prediction-graph {
+            height: 100px;
+            margin-top: 1rem;
+            position: relative;
+        }
+        
+        .prediction-graph-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--light-gray);
+        }
+        
+        .prediction-graph-bar {
+            position: absolute;
+            bottom: 0;
+            width: 8px;
+            background: var(--primary);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease;
+        }
+        
+        .prediction-graph-label {
+            position: absolute;
+            bottom: -20px;
+            font-size: 0.7rem;
+            color: var(--gray);
+            transform: translateX(-50%);
+        }
+        
+        .train-crowd-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .crowd-level {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--light-gray);
+            overflow: hidden;
+        }
+        
+        .crowd-level-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--success), var(--warning), var(--danger));
+        }
+        
+        .crowd-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .crowd-value {
+            font-weight: 600;
+        }
+        
+        .crowd-value.low {
+            color: var(--success);
+        }
+        
+        .crowd-value.medium {
+            color: var(--warning);
+        }
+        
+        .crowd-value.high {
+            color: var(--danger);
+        }
+        
+        .train-occupancy {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--gray);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .train-occupancy span {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .train-weather {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .weather-icon {
+            font-size: 1.2rem;
+        }
+        
+        .weather-sunny {
+            color: #FFC107;
+        }
+        
+        .weather-rainy {
+            color: #2196F3;
+        }
+        
+        .weather-cloudy {
+            color: #9E9E9E;
+        }
+        
+        .train-facilities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .facility-badge {
+            background: var(--light);
+            color: var(--dark);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .facility-badge i {
+            font-size: 0.8rem;
+        }
+        
+        .train-alert {
+            background: rgba(220, 53, 69, 0.1);
+            border-left: 4px solid var(--danger);
+            padding: 0.8rem;
+            border-radius: 0 4px 4px 0;
+            margin-top: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .alert-icon {
+            color: var(--danger);
+            font-size: 1rem;
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            color: var(--danger);
+            margin-bottom: 0.3rem;
+        }
+        
+        .alert-message {
+            font-size: 0.85rem;
+            color: var(--dark);
+        }
+        
+        .train-schedule {
+            margin-top: 1rem;
+        }
+        
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+        
+        .schedule-time {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .schedule-station {
+            color: var(--gray);
+        }
+        
+        .schedule-status {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+        }
+        
+        .status-arrived {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+        
+        .status-scheduled {
+            background-color: rgba(0, 168, 232, 0.1);
+            color: var(--accent);
+        }
+        
+        .status-delayed {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+        
+        .train-connections {
+            margin-top: 1rem;
+        }
+        
+        .connection-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .connection-item:last-child {
+            border-bottom: none;
+        }
+        
+        .connection-line {
+            width: 20px;
+            height: 6px;
+            border-radius: 3px;
+        }
+        
+        .connection-line.mrt {
+            background: var(--mrt-color);
+        }
+        
+        .connection-line.lrt {
+            background: var(--lrt-color);
+        }
+        
+        .connection-line.ktm {
+            background: var(--ktm-color);
+        }
+        
+        .connection-line.monorail {
+            background: var(--monorail-color);
+        }
+        
+        .connection-name {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .connection-time {
+            margin-left: auto;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .train-delay-reason {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background: var(--light);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--dark);
+        }
+        
+        .delay-reason-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--danger);
+        }
+        
+        .delay-reason-message {
+            color: var(--gray);
+        }
+        
+        .train-eta-countdown {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 0.3rem;
+        }
+        
+        .countdown-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray);
+        }
+        
+        .train-platform-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .platform-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--light);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .platform-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .train-direction {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .direction-arrow {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .direction-station {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .train-speed {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .speed-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .speed-unit {
+            font-size: 0.8rem;
+        }
+        
+        .train-carriages {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .carriages-count {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .train-operator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .operator-logo {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .operator-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .train-route-map-container {
+            height: 200px;
+            background: var(--light-gray);
+            border-radius: 12px;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .train-route-map-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            color: white;
+        }
+        
+        .route-map-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .route-map-subtitle {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .train-feedback {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .feedback-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: none;
+            background: var(--light);
+            color: var(--gray);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+        
+        .feedback-btn:hover {
+            background: var(--light-gray);
+        }
+        
+        .feedback-btn i {
+            font-size: 0.9rem;
+        }
+        
+        .feedback-btn.positive {
+            color: var(--success);
+        }
+        
+        .feedback-btn.negative {
+            color: var(--danger);
+        }
+        
+        .train-sharing {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .share-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: none;
+            background: var(--light);
+            color: var(--gray);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+        
+        .share-btn:hover {
+            background: var(--light-gray);
+        }
+        
+        .share-btn i {
+            font-size: 0.9rem;
+        }
+        
+        .share-btn.facebook {
+            color: #3b5998;
+        }
+        
+        .share-btn.twitter {
+            color: #1da1f2;
+        }
+        
+        .share-btn.whatsapp {
+            color: #25d366;
+        }
+        
+        .train-qr-code {
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .qr-code-placeholder {
+            width: 120px;
+            height: 120px;
+            background: var(--light-gray);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+        
+        .qr-code-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 0.5rem;
+        }
+        
+        .train-announcement {
+            background: rgba(0, 168, 232, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 0.8rem;
+            border-radius: 0 4px 4px 0;
+            margin-top: 1rem;
+        }
+        
+        .announcement-title {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .announcement-message {
+            font-size: 0.85rem;
+            color: var(--dark);
+        }
+        
+        .announcement-time {
+            font-size: 0.7rem;
+            color: var(--gray);
+            margin-top: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .train-fare {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background: var(--light);
+            border-radius: 8px;
+        }
+        
+        .fare-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .fare-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .train-passenger-count {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .passenger-count {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .train-temperature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .temperature-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .train-wifi {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .wifi-status {
+            font-weight: 600;
+            color: var(--success);
+        }
+        
+        .wifi-status.off {
+            color: var(--gray);
+        }
+        
+        .wifi-status.slow {
+            color: var(--warning);
+        }
+        
+        .train-accessibility {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .accessibility-status {
+            font-weight: 600;
+            color: var(--success);
+        }
+        
+        .accessibility-status.partial {
+            color: var(--warning);
+        }
+        
+        .accessibility-status.none {
+            color: var(--danger);
+        }
+        
+        .train-security {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .security-status {
+            font-weight: 600;
+            color: var(--success);
+        }
+        
+        .train-toilet {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .toilet-status {
+            font-weight: 600;
+            color: var(--success);
+        }
+        
+        .toilet-status.occupied {
+            color: var(--danger);
+        }
+        
+        .train-power {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .power-socket {
+            font-weight: 600;
+            color: var(--success);
+        }
+        
+        .power-socket.none {
+            color: var(--gray);
+        }
+        
+        .train-emergency {
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .emergency-btn {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .emergency-btn:hover {
+            background: rgba(220, 53, 69, 0.1);
+        }
+        
+        .train-news {
+            margin-top: 2rem;
+        }
+        
+        .news-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .news-item:last-child {
+            border-bottom: none;
+        }
+        
+        .news-image {
+            width: 80px;
+            height: 60px;
+            background: var(--light-gray);
+            border-radius: 8px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .news-content {
+            flex: 1;
+        }
+        
+        .news-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+        
+        .news-excerpt {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 0.3rem;
+        }
+        
+        .news-meta {
+            font-size: 0.7rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .news-time {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .news-category {
+            background: var(--light);
+            color: var(--primary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .train-ad {
+            margin-top: 2rem;
+            background: var(--light);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .ad-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+        
+        .ad-content {
+            font-size: 0.9rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .ad-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .train-tips {
+            margin-top: 2rem;
+        }
+        
+        .tip-item {
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        
+        .tip-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tip-content {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .train-events {
+            margin-top: 2rem;
+        }
+        
+        .event-item {
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: var(--elevation-1);
+        }
+        
+        .event-date {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .event-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .event-location {
+            font-size: 0.8rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .event-description {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+        
+        .event-link {
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .train-feedback-form {
+            margin-top: 2rem;
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--elevation-1);
+        }
+        
+        .feedback-form-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .feedback-form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .feedback-form-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .feedback-form-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .feedback-form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .feedback-form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .feedback-form-submit {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .feedback-form-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 168, 232, 0.3);
+        }
+        
+        .feedback-form-rating {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .rating-star {
+            font-size: 1.5rem;
+            color: var(--light-gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .rating-star.active {
+            color: #FFC107;
+        }
+        
+        .train-survey {
+            margin-top: 2rem;
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--elevation-1);
+        }
+        
+        .survey-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .survey-question {
+            font-size: 0.9rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        
+        .survey-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .survey-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .survey-option input {
+            margin-right: 0.5rem;
+        }
+        
+        .survey-option label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .survey-submit {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .survey-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 168, 232, 0.3);
+        }
+        
+        .train-rewards {
+            margin-top: 2rem;
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--elevation-1);
+        }
+        
+        .rewards-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .rewards-points {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .points-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .points-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .rewards-progress {
+            height: 8px;
+            background: var(--light-gray);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            width: 65%;
+        }
+        
+        .rewards-next {
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-align: center;
+        }
+        
+        .rewards-next span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .rewards-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .rewards-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: none;
+            background: var(--light);
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+        
+        .rewards-btn:hover {
+            background: var(--light-gray);
+        }
+        
+        .rewards-btn.primary {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+        }
+        
+        .train-partners {
+            margin-top: 2rem;
+        }
+        
+        .partners-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+        }
+        
+        .partner-item {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--elevation-1);
+        }
+        
+        .partner-logo {
+            max-width: 100%;
+            height: auto;
+            filter: grayscale(100%);
+            opacity: 0.7;
+            transition: var(--transition);
+        }
+        
+        .partner-item:hover .partner-logo {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+        
+        .train-app-download {
+            margin-top: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+        
+        .app-download-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .app-download-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .app-download-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .app-download-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .app-download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .app-download-btn i {
+            font-size: 1.2rem;
+        }
+        
+        .train-contact {
+            margin-top: 2rem;
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--elevation-1);
+        }
+        
+        .contact-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .contact-method {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .contact-method:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+        
+        .contact-info h4 {
+            font-size: 0.9rem;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+        
+        .contact-info p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .train-faq {
+            margin-top: 2rem;
+        }
+        
+        .faq-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: var(--elevation-1);
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .faq-answer {
+            padding: 0 1rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .faq-answer.active {
+            padding: 0 1rem 1rem;
+            max-height: 500px;
+        }
+        
+        .faq-toggle {
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-toggle.active {
+            transform: rotate(180deg);
+        }
+        
+        .train-testimonials {
+            margin-top: 2rem;
+        }
+        
+        .testimonial-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--elevation-1);
+        }
+        
+        .testimonial-text {
+            font-size: 0.9rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        .author-info h4 {
+            font-size: 0.9rem;
+            color: var(--dark);
+            margin-bottom: 0.2rem;
+        }
+        
+        .author-info p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .train-newsletter {
+            margin-top: 2rem;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+        
+        .newsletter-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .newsletter-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .newsletter-form {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .newsletter-form input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 30px 0 0 30px;
+            font-size: 0.9rem;
+        }
+        
+        .newsletter-form input:focus {
+            outline: none;
+        }
+        
+        .newsletter-form button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0 30px 30px 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .newsletter-form button:hover {
+            background: var(--primary-dark);
+        }
+        
+        .train-legal {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-align: center;
+        }
+        
+        .legal-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .legal-link {
+            color: var(--gray);
+            text-decoration: none;
+        }
+        
+        .legal-link:hover {
+            color: var(--primary);
+        }
+        
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 2.3rem;
+            }
+            
+            .stats-container {
+                flex-wrap: wrap;
+                gap: 1.5rem;
+            }
+            
+            .stat-item {
+                flex: 1 1 40%;
+            }
+            
+            .route-info {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 1rem;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .hamburger {
+                display: flex;
+            }
+            
+            .auth-buttons {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .hero {
+                padding: 2rem 1rem;
+                margin-left: -1rem;
+                margin-right: -1rem;
+                border-radius: 0;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .typing-text {
+                font-size: 1.1rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .primary-btn, .secondary-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .current-train {
+                padding: 1.5rem;
+            }
+            
+            .station {
+                width: 60px;
+            }
+            
+            .station-name {
+                font-size: 0.8rem;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .real-time-clock {
+                bottom: 1rem;
+                right: 1rem;
+                font-size: 0.9rem;
+                padding: 0.6rem 1rem;
+            }
+            
+            .assistant-bot {
+                bottom: 1rem;
+                right: 5rem;
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+            
+            .assistant-chat {
+                bottom: 7rem;
+                right: 1rem;
+                width: 280px;
+            }
+            
+            .notification-bell {
+                right: 8rem;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+            
+            .notification-panel {
+                right: 8rem;
+                width: 260px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .card {
+                flex: 0 0 280px;
+                padding: 1.5rem;
+            }
+            
+            .route-line {
+                margin: 0 30px;
+            }
+            
+            .station {
+                width: 50px;
+            }
+            
+            .station-name {
+                font-size: 0.7rem;
+            }
+            
+            .map-overlay {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .map-zoom-controls {
+                align-self: flex-end;
+            }
+            
+            .assistant-bot {
+                bottom: 1rem;
+                right: 4rem;
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+            
+            .assistant-chat {
+                bottom: 6rem;
+                width: 260px;
+            }
+            
+            .notification-bell {
+                right: 6rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .notification-panel {
+                right: 6rem;
+                width: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-train"></i>
+                NetRealTrain
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="#" class="active" data-line="mrt"><i class="fas fa-subway"></i> MRT</a></li>
+                    <li><a href="#" data-line="lrt"><i class="fas fa-train-tram"></i> LRT</a></li>
+                    <li><a href="#" data-line="ktm"><i class="fas fa-train"></i> KTM</a></li>
+                    <li><a href="#" data-line="monorail"><i class="fas fa-monorail"></i> Monorel</a></li>
+                    <li><a href="#"><i class="fas fa-phone-alt"></i> Contact</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button onclick="window.location.href='login.html'" class="login-btn">Log in</button>
+                <button onclick="window.location.href='signup.html'" class="signup-btn">Sign Up</button>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        <nav class="mobile-menu" id="mobileMenu">
+            <ul>
+                <li><a href="#" class="active" data-line="mrt"><i class="fas fa-subway"></i> MRT</a></li>
+                <li><a href="#" data-line="lrt"><i class="fas fa-train-tram"></i> LRT</a></li>
+                <li><a href="#" data-line="ktm"><i class="fas fa-train"></i> KTM</a></li>
+                <li><a href="#" data-line="monorail"><i class="fas fa-monorail"></i> Monorel</a></li>
+                <li><a href="#"><i class="fas fa-info-circle"></i> About</a></li>
+                <li><a href="#"><i class="fas fa-phone-alt"></i> Contact</a></li>
+            </ul>
+            <div class="mobile-auth">
+                <button onclick="window.location.href='login.html'" class="login-btn">Log in</button>
+                <button onclick="window.location.href='signup.html'" class="signup-btn">Sign Up</button>
+            </div>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Advanced Real-Time Train Tracking</h1>
+                <p class="typing-text">Precision tracking for your daily commute</p>
+                <div class="search-container">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search ticket number or destination...">
+                    </div>
+                </div>
+                <div class="cta-buttons">
+                    <button class="primary-btn"><i class="fas fa-map-marked-alt"></i> View Network Map</button>
+                    <button class="secondary-btn"><i class="fas fa-bell"></i> Set Alerts</button>
+                </div>
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <div class="stat-number" id="activeTrains">1,428</div>
+                        <div class="stat-label">Active Trains</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="stationsCovered">312</div>
+                        <div class="stat-label">Stations Covered</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="onTimeRate">98.7%</div>
+                        <div class="stat-label">On-Time Rate</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="dailyUsers">2.4M</div>
+                        <div class="stat-label">Daily Users</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="line-selector">
+            <button class="line-btn all" data-line="all">All</button>
+            <button class="line-btn mrt active" data-line="mrt"><i class="fas fa-subway"></i> MRT</button>
+            <button class="line-btn lrt" data-line="lrt"><i class="fas fa-train-tram"></i> LRT</button>
+            <button class="line-btn ktm" data-line="ktm"><i class="fas fa-train"></i> KTM</button>
+            <button class="line-btn monorail" data-line="monorail"><i class="fas fa-monorail"></i> Monorel</button>
+        </div>
+        
+        <section class="train-activities">
+            <div class="section-header">
+                <h2 class="section-title">Live Train Activities</h2>
+                <a href="#" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="cards-container" id="trainCards">
+                <!-- MRT Cards -->
+                <div class="card mrt-card">
+                    <div class="card-header">
+                        <div>
+                            <h3>KL Sentral</h3>
+                            <div class="train-line"><i class="fas fa-subway"></i> MRT Kajang Line</div>
+                        </div>
+                        <span class="status status-arrived"><i class="fas fa-check-circle"></i> Arrived</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-map-marker-alt"></i> From:</span>
+                        <span class="info-value">Putrajaya</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-flag-checkered"></i> To:</span>
+                        <span class="info-value">Kwasa Damansara</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-clock"></i> Arrived:</span>
+                        <span class="info-value">08:15 AM</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-door-open"></i> Platform:</span>
+                        <span class="info-value">3</span>
+                    </div>
+                    <div class="train-progress-container">
+                        <div class="train-progress-bar" style="width: 85%"></div>
+                    </div>
+                    <div class="train-progress-info">
+                        <span class="train-progress-label">Next: Bangsar</span>
+                        <span class="train-progress-eta">03:45 min</span>
+                    </div>
+                </div>
+                
+                <div class="card mrt-card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Phileo Damansara</h3>
+                            <div class="train-line"><i class="fas fa-subway"></i> MRT Kajang Line</div>
+                        </div>
+                        <span class="status status-ontime"><i class="fas fa-check-circle"></i> On Time</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-map-marker-alt"></i> From:</span>
+                        <span class="info-value">Kwasa Damansara</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-flag-checkered"></i> To:</span>
+                        <span class="info-value">Kajang</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-clock"></i> ETA:</span>
+                        <span class="info-value">09:00 AM</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-door-open"></i> Platform:</span>
+                        <span class="info-value">1</span>
+                    </div>
+                    <div class="train-progress-container">
+                        <div class="train-progress-bar" style="width: 65%"></div>
+                    </div>
+                    <div class="train-progress-info">
+                        <span class="train-progress-label">Next: Pusat Bandar</span>
+                        <span class="train-progress-eta">02:15 min</span>
+                    </div>
+                </div>
+                
+                <!-- LRT Cards -->
+                <div class="card lrt-card" style="display: none;">
+                    <div class="card-header">
+                        <div>
+                            <h3>Ampang Park</h3>
+                            <div class="train-line"><i class="fas fa-train-tram"></i> LRT Ampang Line</div>
+                        </div>
+                        <span class="status status-delayed"><i class="fas fa-exclamation-circle"></i> Delayed</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-map-marker-alt"></i> From:</span>
+                        <span class="info-value">Ampang</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-flag-checkered"></i> To:</span>
+                        <span class="info-value">Sentul Timur</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-clock"></i> ETA:</span>
+                        <span class="info-value">08:30 AM</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-exclamation-triangle"></i> Status:</span>
+                        <span class="info-value">Signal issue</span>
+                    </div>
+                    <div class="train-progress-container">
+                        <div class="train-progress-bar" style="width: 45%"></div>
+                    </div>
+                    <div class="train-progress-info">
+                        <span class="train-progress-label">Delay: 8 min</span>
+                        <span class="train-progress-eta">Next: KLCC</span>
+                    </div>
+                </div>
+                
+                <div class="card lrt-card" style="display: none;">
+                    <div class="card-header">
+                        <div>
+                            <h3>KLCC</h3>
+                            <div class="train-line"><i class="fas fa-train-tram"></i> LRT Kelana Jaya Line</div>
+                        </div>
+                        <span class="status status-ontime"><i class="fas fa-check-circle"></i> On Time</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-map-marker-alt"></i> From:</span>
+                        <span class="info-value">Gombak</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-flag-checkered"></i> To:</span>
+                        <span class="info-value">Putra Heights</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-clock"></i> ETA:</span>
+                        <span class="info-value">09:00 AM</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-door-open"></i> Platform:</span>
+                        <span class="info-value">1</span>
+                    </div>
+                    <div class="train-progress-container">
+                        <div class="train-progress-bar" style="width: 75%"></div>
+                    </div>
+                    <div class="train-progress-info">
+                        <span class="train-progress-label">Next: Kampung Baru</span>
+                        <span class="train-progress-eta">02:15 min</span>
+                    </div>
+                </div>
+                
+                <!-- KTM Cards -->
+                <div class="card ktm-card" style="display: none;">
+                    <div class="card-header">
+                        <div>
+                            <h3>Batu Caves</h3>
+                            <div class="train-line"><i class="fas fa-train"></i> KTM Batu Caves Line</div>
+                        </div>
+                        <span class="status status-arrived"><i class="fas fa-check-circle"></i> Arrived</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-map-marker-alt"></i> From:</span>
+                        <span class="info-value">Pelabuhan Klang</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-flag-checkered"></i> To:</span>
+                        <span class="info-value">Batu Caves</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-clock"></i> Arrived:</span>
+                        <span class="info-value">09:15 AM</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-door-open"></i> Platform:</span>
+                        <span class="info-value">2</span>
+                    </div>
+                    <div class="train-progress-container">
+                        <div class="train-progress-bar" style="width: 95%"></div>
+                    </div>
+                    <div class="train-progress-info">
+                        <span class="train-progress-label">Next departure</span>
+                        <span class="train-progress-eta">07:30 min</span>
+                    </div>
+                </div>
+                
+                <!-- Monorail Cards -->
+                <div class="card monorail-card" style="display: none;">
+                    <div class="card-header">
+                        <div>
+                            <h3>Bukit Bintang</h3>
+                            <div class="train-line"><i class="fas fa-monorail"></i> KL Monorail</div>
+                        </div>
+                        <span class="status status-delayed"><i class="fas fa-exclamation-circle"></i> Delayed</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-map-marker-alt"></i> From:</span>
+                        <span class="info-value">KL Sentral</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-flag-checkered"></i> To:</span>
+                        <span class="info-value">Titiwangsa</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-clock"></i> ETA:</span>
+                        <span class="info-value">09:30 AM</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-exclamation-triangle"></i> Status:</span>
+                        <span class="info-value">Maintenance work</span>
+                    </div>
+                    <div class="train-progress-container">
+                        <div class="train-progress-bar" style="width: 55%"></div>
+                    </div>
+                    <div class="train-progress-info">
+                        <span class="train-progress-label">Delay: 12 min</span>
+                        <span class="train-progress-eta">Next: Raja Chulan</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="current-train">
+            <h2 class="section-title">Your Current Journey</h2>
+            <div class="train-header">
+                <div class="train-title">
+                    <i class="fas fa-subway"></i>
+                    MRT Kajang Line
+                </div>
+                <div class="train-number">Ticket No: MRT 402</div>
+            </div>
+            <div class="train-route">
+                <div class="route-line">
+                    <div class="route-line-progress"></div>
+                </div>
+                <div class="stations">
+                    <div class="station passed">
+                        <div class="station-dot"></div>
+                        <div class="station-name">Kwasa Damansara</div>
+                    </div>
+                    <div class="station passed">
+                        <div class="station-dot"></div>
+                        <div class="station-name">Kota Damansara</div>
+                    </div>
+                    <div class="station passed">
+                        <div class="station-dot"></div>
+                        <div class="station-name">Surian</div>
+                    </div>
+                    <div class="station passed">
+                        <div class="station-dot"></div>
+                        <div class="station-name">Mutiara Damansara</div>
+                    </div>
+                    <div class="station passed">
+                        <div class="station-dot"></div>
+                        <div class="station-name">Bandar Utama</div>
+                    </div>
+                    <div class="station passed">
+                        <div class="station-dot"></div>
+                        <div class="station-name">TTDI</div>
+                    </div>
+                    <div class="station current">
+                        <div class="station-dot"></div>
+                        <div class="station-name">Phileo Damansara</div>
+                    </div>
+                    <div class="station next">
+                        <div class="station-dot"></div>
+                        <div class="station-name">Pusat Bandar Damansara</div>
+                    </div>
+                    <div class="station">
+                        <div class="station-dot"></div>
+                        <div class="station-name">Semantan</div>
+                    </div>
+                    <div class="station">
+                        <div class="station-dot"></div>
+                        <div class="station-name">Muzium Negara</div>
+                    </div>
+                </div>
+                <div class="route-info">
+                    <div class="route-info-item">
+                        <div class="route-info-label">Next Station</div>
+                        <div class="route-info-value">Pusat Bandar Damansara</div>
+                    </div>
+                    <div class="route-info-item">
+                        <div class="route-info-label">Arriving In</div>
+                        <div class="route-info-value">03:22 <span>min</span></div>
+                    </div>
+                    <div class="route-info-item">
+                        <div class="route-info-label">Final Destination</div>
+                        <div class="route-info-value">Kajang</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="train-arrival-prediction">
+                <div class="prediction-header">
+                    <div class="prediction-title">Arrival Prediction</div>
+                    <div class="prediction-accuracy">95% Accuracy</div>
+                </div>
+                <div class="prediction-times">
+                    <div class="prediction-time">
+                        <div class="prediction-time-label">Early Arrival</div>
+                        <div class="prediction-time-value early">03:05</div>
+                    </div>
+                    <div class="prediction-time">
+                        <div class="prediction-time-label">Expected</div>
+                        <div class="prediction-time-value on-time">03:22</div>
+                    </div>
+                    <div class="prediction-time">
+                        <div class="prediction-time-label">Late Arrival</div>
+                        <div class="prediction-time-value late">03:38</div>
+                    </div>
+                </div>
+                <div class="prediction-graph">
+                    <div class="prediction-graph-line"></div>
+                    <div class="prediction-graph-bar" style="height: 60px; left: 25%;">
+                        <div class="prediction-graph-label">Early</div>
+                    </div>
+                    <div class="prediction-graph-bar" style="height: 80px; left: 50%;">
+                        <div class="prediction-graph-label">Expected</div>
+                    </div>
+                    <div class="prediction-graph-bar" style="height: 40px; left: 75%;">
+                        <div class="prediction-graph-label">Late</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="train-crowd-indicator">
+                <div class="crowd-label">Crowd level: <span class="crowd-value medium">Medium</span></div>
+                <div class="crowd-level">
+                    <div class="crowd-level-fill" style="width: 65%"></div>
+                </div>
+            </div>
+            
+            <div class="train-occupancy">
+                <span>Capacity: <span>65%</span></span>
+                <span>Seats available: <span>42</span></span>
+            </div>
+            
+            <div class="train-weather">
+                <i class="fas fa-sun weather-icon weather-sunny"></i>
+                <span>Weather: Sunny, No delays expected</span>
+            </div>
+            
+            <div class="train-facilities">
+                <div class="facility-badge"><i class="fas fa-wifi"></i> Free WiFi</div>
+                <div class="facility-badge"><i class="fas fa-wheelchair"></i> Accessible</div>
+                <div class="facility-badge"><i class="fas fa-plug"></i> Power Outlets</div>
+                <div class="facility-badge"><i class="fas fa-restroom"></i> Toilets</div>
+            </div>
+            
+            <div class="train-alert">
+                <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="alert-content">
+                    <div class="alert-title">Service Advisory</div>
+                    <div class="alert-message">Elevator maintenance at Pusat Bandar Damansara station until 5 PM today</div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="map-container">
+            <div class="train-route-map" id="trainRouteMap"></div>
+            <div class="map-overlay">
+                <div class="map-train-info">
+                    <div class="map-train-icon">
+                        <i class="fas fa-subway"></i>
+                    </div>
+                    <div class="map-train-details">
+                        <h4>MRT Kajang Line - Train 402</h4>
+                        <p><i class="fas fa-clock"></i> Next station in 03:22 min</p>
+                    </div>
+                </div>
+                <div class="map-zoom-controls">
+                    <div class="map-zoom-btn"><i class="fas fa-plus"></i></div>
+                    <div class="map-zoom-btn"><i class="fas fa-minus"></i></div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="features-section">
+            <h2 class="section-title">Why Choose NetRealTrain</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Real-Time Updates</h3>
+                    <p>Get instant notifications about train arrivals, delays, and schedule changes to plan your journey perfectly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3>Interactive Maps</h3>
+                    <p>Visualize train routes and stations with our detailed interactive maps for better navigation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Smart Alerts</h3>
+                    <p>Customizable alerts for your favorite routes and stations so you're always informed.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Performance Analytics</h3>
+                    <p>Track historical performance data to choose the most reliable routes for your commute.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="train-news">
+            <h2 class="section-title">Service Updates</h2>
+            <div class="news-item">
+                <div class="news-image"></div>
+                <div class="news-content">
+                    <div class="news-title">MRT Kajang Line Service Enhancement</div>
+                    <div class="news-excerpt">Increased frequency during peak hours starting next Monday to reduce crowding.</div>
+                    <div class="news-meta">
+                        <div class="news-time"><i class="far fa-clock"></i> 2 hours ago</div>
+                        <div class="news-category">Service Update</div>
+                    </div>
+                </div>
+            </div>
+            <div class="news-item">
+                <div class="news-image"></div>
+                <div class="news-content">
+                    <div class="news-title">New Station Opening Soon</div>
+                    <div class="news-excerpt">The new Bandar Malaysia station will open on December 15th with improved connectivity.</div>
+                    <div class="news-meta">
+                        <div class="news-time"><i class="far fa-clock"></i> 1 day ago</div>
+                        <div class="news-category">Expansion</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" class="view-all">View All Updates <i class="fas fa-arrow-right"></i></a>
+        </section>
+        
+        <section class="train-app-download">
+            <div class="app-download-title">Get the NetRealTrain App</div>
+            <div class="app-download-subtitle">Download our mobile app for real-time updates on the go</div>
+            <div class="app-download-buttons">
+                <button class="app-download-btn"><i class="fab fa-apple"></i> App Store</button>
+                <button class="app-download-btn"><i class="fab fa-google-play"></i> Google Play</button>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="footer-container">
+            <div class="footer-about">
+                <div class="footer-logo">
+                    <i class="fas fa-train"></i>
+                    NetRealTrain
+                </div>
+                <p class="footer-about">Revolutionizing urban mobility with precise real-time train tracking and predictive analytics for smarter commuting.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Home</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Services</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Pricing</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Train Lines</h4>
+                <ul>
+                    <li><a href="#" class="mrt-link"><i class="fas fa-chevron-right"></i> MRT Kajang Line</a></li>
+                    <li><a href="#" class="lrt-link"><i class="fas fa-chevron-right"></i> LRT Kelana Jaya Line</a></li>
+                    <li><a href="#" class="lrt-link"><i class="fas fa-chevron-right"></i> LRT Ampang Line</a></li>
+                    <li><a href="#" class="ktm-link"><i class="fas fa-chevron-right"></i> KTM Seremban Line</a></li>
+                    <li><a href="#" class="monorail-link"><i class="fas fa-chevron-right"></i> KLIA Ekspres</a></li>
+                </ul>
+            </div>
+            <div class="footer-newsletter">
+                <h4>Newsletter</h4>
+                <p>Subscribe to our newsletter to receive updates on new features and service improvements.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Your email address">
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </form>
+                <p><i class="fas fa-phone-alt"></i> Customer Support: +603-1234 5678</p>
+                <p><i class="fas fa-envelope"></i> Email: support@netrealtrain.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy;2025 Powered By NetIQ Technologies.<p>All rights reserved.</p><p> Privacy Policy | Terms of Service</p>
+        </div>
+    </footer>
+    
+    <div class="real-time-clock" id="realTimeClock">
+        <i class="far fa-clock"></i>
+        <span id="clockTime">00:00:00</span>
+        <span id="clockDate">2023-01-01</span>
+    </div>
+    
+    <div class="assistant-bot" id="assistantBot">
+        <i class="fas fa-robot"></i>
+    </div>
+    
+    <div class="assistant-chat" id="assistantChat">
+        <div class="chat-header">
+            <i class="fas fa-robot"></i>
+            <h3>ALIN</h3>
+            <button class="close-chat" id="closeChat"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                Hello! I'm ALIN, your train assistant. How can I help you today?
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder=" Ask me about train schedules..." id="chatInput">
+            <button class="send-btn" id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    
+    <div class="notification-bell" id="notificationBell">
+        <i class="fas fa-bell"></i>
+        <div class="notification-badge">3</div>
+    </div>
+    
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button class="notification-close" id="notificationClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="notification-item">
+            <div class="notification-title">Delay on MRT Kajang Line</div>
+            <div class="notification-message">10-minute delay between Phileo Damansara and Pusat Bandar due to signal issues</div>
+            <div class="notification-time"><i class="far fa-clock"></i> 15 min ago</div>
+        </div>
+        <div class="notification-item">
+            <div class="notification-title">Your train is arriving</div>
+            <div class="notification-message">MRT 402 to Kajang arriving at Phileo Damansara in 3 minutes</div>
+            <div class="notification-time"><i class="far fa-clock"></i> 30 min ago</div>
+        </div>
+        <div class="notification-item">
+            <div class="notification-title">Service Update</div>
+            <div class="notification-message">New station opening at Bandar Malaysia on December 15th</div>
+            <div class="notification-time"><i class="far fa-clock"></i> 2 hours ago</div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+            });
+            
+            const typingText = document.querySelector('.typing-text');
+            setTimeout(() => {
+                typingText.style.borderRight = 'none';
+            }, 4000);
+            
+            function updateClock() {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('en-US', {hour12: false});
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const dateStr = now.toLocaleDateString('en-US', options);
+                document.getElementById('clockTime').textContent = timeStr;
+                document.getElementById('clockDate').textContent = dateStr;
+            }
+            
+            setInterval(updateClock, 1000);
+            updateClock();
+            
+            function animateStats() {
+                const stats = [
+                    { id: 'activeTrains', target: 1428, duration: 2000 },
+                    { id: 'stationsCovered', target: 312, duration: 1500 },
+                    { id: 'dailyUsers', target: 2400000, duration: 2500 }
+                ];
+                
+                stats.forEach(stat => {
+                    const element = document.getElementById(stat.id);
+                    const start = 0;
+                    const increment = stat.target / (stat.duration / 16);
+                    let current = start;
+                    
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= stat.target) {
+                            clearInterval(timer);
+                            if (stat.id === 'dailyUsers') {
+                                element.textContent = (stat.target / 1000000).toFixed(1) + 'M';
+                            } else {
+                                element.textContent = Math.floor(stat.target);
+                            }
+                            return;
+                        }
+                        
+                        if (stat.id === 'dailyUsers') {
+                            element.textContent = Math.floor(current / 1000) + 'K';
+                        } else {
+                            element.textContent = Math.floor(current);
+                        }
+                    }, 16);
+                });
+            }
+            
+            setTimeout(animateStats, 500);
+            
+            /*
+            function updateETAs() {
+                const etaElements = document.querySelectorAll('.train-progress-eta');
+                const progressBars = document.querySelectorAll('.train-progress-bar');
+                
+                etaElements.forEach((el, index) => {
+                    const randomMins = Math.floor(Math.random() * 4) + 1;
+                    const randomSecs = Math.floor(Math.random() * 60);
+                    const formattedSecs = randomSecs < 10 ? `0${randomSecs}` : randomSecs;
+                    el.textContent = `${randomMins}:${formattedSecs} min`;
+                    
+                    if (progressBars[index]) {
+                        const currentWidth = parseInt(progressBars[index].style.width);
+                        const newWidth = Math.min(currentWidth + 5, 100);
+                        progressBars[index].style.width = `${newWidth}%`;
+                    }
+                });
+            }
+            
+            setInterval(updateETAs, 10000);
+            */
+
+            // Live countdown timer for "min" times
+            function startLiveTimers() {
+                const etaElements = document.querySelectorAll('.train-progress-eta');
+                const progressBars = document.querySelectorAll('.train-progress-bar');
+                const mapTrainDetails = document.querySelector('.map-train-details p');
+                const routeInfoValue = document.querySelector('.route-info-item:nth-child(2) .route-info-value');
+
+                // Initialize timers with random start seconds (between 60 and 240 seconds)
+                let timers = [];
+                etaElements.forEach(() => {
+                    timers.push(Math.floor(Math.random() * 180) + 60);
+                });
+                let mapTimer = Math.floor(Math.random() * 180) + 60;
+                let routeTimer = Math.floor(Math.random() * 180) + 60;
+
+                setInterval(() => {
+                    // Update etaElements timers
+                    etaElements.forEach((el, index) => {
+                        if (timers[index] <= 0) {
+                            timers[index] = Math.floor(Math.random() * 180) + 60;
+                        }
+                        let mins = Math.floor(timers[index] / 60);
+                        let secs = timers[index] % 60;
+                        let formattedSecs = secs < 10 ? `0${secs}` : secs;
+                        el.textContent = `${mins}:${formattedSecs} min`;
+                        timers[index]--;
+
+                        // Update progress bar width smoothly
+                        if (progressBars[index]) {
+                            let width = parseInt(progressBars[index].style.width);
+                            width = (width + 1) % 101;
+                            progressBars[index].style.width = `${width}%`;
+                        }
+                    });
+
+                    // Update mapTrainDetails timer
+                    if (mapTrainDetails) {
+                        if (mapTimer <= 0) {
+                            mapTimer = Math.floor(Math.random() * 180) + 60;
+                        }
+                        let mins = Math.floor(mapTimer / 60);
+                        let secs = mapTimer % 60;
+                        let formattedSecs = secs < 10 ? `0${secs}` : secs;
+                        mapTrainDetails.innerHTML = `<i class="fas fa-clock"></i> Next station in ${mins}:${formattedSecs} min`;
+                        mapTimer--;
+                    }
+
+                    // Update routeInfoValue timer
+                    if (routeInfoValue) {
+                        if (routeTimer <= 0) {
+                            routeTimer = Math.floor(Math.random() * 180) + 60;
+                        }
+                        let mins = Math.floor(routeTimer / 60);
+                        let secs = routeTimer % 60;
+                        let formattedSecs = secs < 10 ? `0${secs}` : secs;
+                        routeInfoValue.innerHTML = `${mins}:${formattedSecs} <span>min</span>`;
+                        routeTimer--;
+                    }
+                }, 1000);
+            }
+
+            startLiveTimers();
+            
+            function simulateTrainMovement() {
+                const stations = document.querySelectorAll('.stations .station');
+                let currentIndex = Array.from(stations).findIndex(s => s.classList.contains('current'));
+                
+                if (currentIndex >= 0 && currentIndex < stations.length - 1) {
+                    stations[currentIndex].classList.remove('current');
+                    stations[currentIndex].classList.add('passed');
+                    
+                    if (currentIndex + 1 < stations.length) {
+                        stations[currentIndex + 1].classList.add('current');
+                        if (currentIndex + 2 < stations.length) {
+                            stations[currentIndex + 2].classList.add('next');
+                        }
+                        if (currentIndex > 0) {
+                            stations[currentIndex - 1].classList.remove('next');
+                        }
+                    }
+                    
+                    const progress = (currentIndex + 1) / (stations.length - 1) * 100;
+                    document.querySelector('.route-line-progress').style.width = `${progress}%`;
+                    document.querySelector('.route-info-item:nth-child(2) .route-info-value').innerHTML = `${Math.floor(Math.random() * 2) + 1}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')} <span>min</span>`;
+                } else if (currentIndex === stations.length - 1) {
+                    stations[currentIndex].classList.remove('current');
+                    stations[currentIndex].classList.add('passed');
+                    
+                    setTimeout(() => {
+                        stations.forEach((s, i) => {
+                            s.classList.remove('passed', 'current', 'next');
+                            if (i === 0) s.classList.add('current');
+                            if (i === 1) s.classList.add('next');
+                        });
+                        document.querySelector('.route-line-progress').style.width = '0%';
+                    }, 3000);
+                }
+            }
+            
+            setInterval(simulateTrainMovement, 15000);
+            
+            const lineBtns = document.querySelectorAll('.line-btn, .nav-menu ul li a[data-line], .mobile-menu ul li a[data-line]');
+            
+            lineBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const line = this.getAttribute('data-line');
+                    
+                    document.querySelectorAll('.line-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.nav-menu ul li a').forEach(a => a.classList.remove('active'));
+                    document.querySelectorAll('.mobile-menu ul li a').forEach(a => a.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    
+                    if (line === 'all') {
+                        document.querySelectorAll('.card').forEach(card => {
+                            card.style.display = 'block';
+                        });
+                    } else {
+                        document.querySelectorAll('.card').forEach(card => {
+                            card.style.display = 'none';
+                        });
+                        document.querySelectorAll(`.${line}-card`).forEach(card => {
+                            card.style.display = 'block';
+                        });
+                    }
+                    
+                    updateCurrentJourney(line);
+                    updateRouteMap(line);
+                });
+            });
+            
+            function updateCurrentJourney(line) {
+                const trainTitle = document.querySelector('.train-title');
+                const trainNumber = document.querySelector('.train-number');
+                
+                switch(line) {
+                    case 'mrt':
+                        trainTitle.innerHTML = '<i class="fas fa-subway"></i> MRT Kajang Line';
+                        trainNumber.textContent = 'Ticket No: MRT 402';
+                        break;
+                    case 'lrt':
+                        trainTitle.innerHTML = '<i class="fas fa-train-tram"></i> LRT Kelana Jaya Line';
+                        trainNumber.textContent = 'Ticket No: LRT 205';
+                        break;
+                    case 'ktm':
+                        trainTitle.innerHTML = '<i class="fas fa-train"></i> KTM Batu Caves Line';
+                        trainNumber.textContent = 'Ticket No: KTM 108';
+                        break;
+                    case 'monorail':
+                        trainTitle.innerHTML = '<i class="fas fa-monorail"></i> KL Monorail';
+                        trainNumber.textContent = 'Ticket No: MONO 76';
+                        break;
+                }
+                
+                const stations = document.querySelectorAll('.stations .station');
+                stations.forEach((s, i) => {
+                    s.classList.remove('passed', 'current', 'next');
+                    if (i === 0) s.classList.add('current');
+                    if (i === 1) s.classList.add('next');
+                });
+                document.querySelector('.route-line-progress').style.width = '0%';
+            }
+            
+            function updateRouteMap(line) {
+                const mapContainer = document.getElementById('trainRouteMap');
+                mapContainer.innerHTML = '';
+                
+                let stations = [];
+                let lineColor = '';
+                let lineName = '';
+                let lineIcon = '';
+                
+                switch(line) {
+                    case 'mrt':
+                        stations = [
+                            { name: 'Kwasa Damansara', x: 10, y: 50 },
+                            { name: 'Kota Damansara', x: 20, y: 50 },
+                            { name: 'Surian', x: 30, y: 50 },
+                            { name: 'Mutiara Damansara', x: 40, y: 50 },
+                            { name: 'Bandar Utama', x: 50, y: 50 },
+                            { name: 'TTDI', x: 60, y: 50 },
+                            { name: 'Phileo Damansara', x: 70, y: 50 },
+                            { name: 'Pusat Bandar Damansara', x: 80, y: 50 },
+                            { name: 'Semantan', x: 90, y: 50 }
+                        ];
+                        lineColor = 'var(--mrt-color)';
+                        lineName = 'MRT Kajang Line';
+                        lineIcon = 'fas fa-subway';
+                        break;
+                    case 'lrt':
+                        stations = [
+                            { name: 'Gombak', x: 10, y: 50 },
+                            { name: 'Taman Melati', x: 20, y: 50 },
+                            { name: 'Wangsa Maju', x: 30, y: 50 },
+                            { name: 'Setiawangsa', x: 40, y: 50 },
+                            { name: 'KLCC', x: 50, y: 50 },
+                            { name: 'Kampung Baru', x: 60, y: 50 },
+                            { name: 'Dang Wangi', x: 70, y: 50 },
+                            { name: 'Masjid Jamek', x: 80, y: 50 }
+                        ];
+                        lineColor = 'var(--lrt-color)';
+                        lineName = 'LRT Kelana Jaya Line';
+                        lineIcon = 'fas fa-train-tram';
+                        break;
+                    case 'ktm':
+                        stations = [
+                            { name: 'Pelabuhan Klang', x: 10, y: 50 },
+                            { name: 'Klang', x: 20, y: 50 },
+                            { name: 'Kuala Lumpur', x: 30, y: 50 },
+                            { name: 'Mid Valley', x: 40, y: 50 },
+                            { name: 'Seputeh', x: 50, y: 50 },
+                            { name: 'Salak Selatan', x: 60, y: 50 },
+                            { name: 'Bandar Tasik Selatan', x: 70, y: 50 },
+                            { name: 'Batu Caves', x: 80, y: 50 }
+                        ];
+                        lineColor = 'var(--ktm-color)';
+                        lineName = 'KTM Batu Caves Line';
+                        lineIcon = 'fas fa-train';
+                        break;
+                    case 'monorail':
+                        stations = [
+                            { name: 'KL Sentral', x: 10, y: 50 },
+                            { name: 'Tun Sambanthan', x: 20, y: 50 },
+                            { name: 'Maharajalela', x: 30, y: 50 },
+                            { name: 'Bukit Bintang', x: 40, y: 50 },
+                            { name: 'Imbi', x: 50, y: 50 },
+                            { name: 'Raja Chulan', x: 60, y: 50 },
+                            { name: 'Medan Tuanku', x: 70, y: 50 },
+                            { name: 'Titiwangsa', x: 80, y: 50 }
+                        ];
+                        lineColor = 'var(--monorail-color)';
+                        lineName = 'KL Monorail';
+                        lineIcon = 'fas fa-monorail';
+                        break;
+                }
+                
+                const routeLine = document.createElement('div');
+                routeLine.className = 'route-line-map';
+                routeLine.style.width = '90%';
+                routeLine.style.left = '5%';
+                routeLine.style.top = '50%';
+                routeLine.style.backgroundColor = lineColor.replace(')', ', 0.2)');
+                
+                const routeProgress = document.createElement('div');
+                routeProgress.className = 'route-line-progress-map';
+                routeProgress.style.width = '65%';
+                routeProgress.style.backgroundColor = lineColor;
+                
+                routeLine.appendChild(routeProgress);
+                mapContainer.appendChild(routeLine);
+                
+                stations.forEach((station, index) => {
+                    const stationDot = document.createElement('div');
+                    stationDot.className = 'station-map';
+                    stationDot.style.left = `${station.x}%`;
+                    stationDot.style.top = `${station.y}%`;
+                    
+                    if (index === 0) {
+                        stationDot.classList.add('current');
+                    } else if (index < 3) {
+                        stationDot.classList.add('passed');
+                    }
+                    
+                    const stationName = document.createElement('div');
+                    stationName.className = 'station-name-map';
+                    stationName.textContent = station.name;
+                    stationName.style.left = `${station.x}%`;
+                    stationName.style.top = `${station.y + 5}%`;
+                    
+                    mapContainer.appendChild(stationDot);
+                    mapContainer.appendChild(stationName);
+                });
+                
+                const trainIcon = document.createElement('div');
+                trainIcon.className = 'train-icon-map';
+                trainIcon.style.left = `${stations[2].x}%`;
+                trainIcon.style.top = `${stations[2].y}%`;
+                trainIcon.style.backgroundColor = lineColor;
+                trainIcon.innerHTML = `<i class="${lineIcon}"></i>`;
+                mapContainer.appendChild(trainIcon);
+                
+                const mapTrainIcon = document.querySelector('.map-train-icon');
+                const mapTrainDetails = document.querySelector('.map-train-details h4');
+                mapTrainIcon.style.background = `linear-gradient(135deg, ${lineColor}, ${lineColor})`;
+                mapTrainDetails.textContent = `${lineName} - Train ${Math.floor(Math.random() * 500) + 1}`;
+            }
+            
+            updateRouteMap('mrt');
+            
+            const assistantBot = document.getElementById('assistantBot');
+            const assistantChat = document.getElementById('assistantChat');
+            const closeChat = document.getElementById('closeChat');
+            const sendMessage = document.getElementById('sendMessage');
+            const chatInput = document.getElementById('chatInput');
+            const chatMessages = document.getElementById('chatMessages');
+            
+            assistantBot.addEventListener('click', function() {
+                assistantChat.classList.toggle('active');
+                notificationPanel.classList.remove('active');
+            });
+            
+            closeChat.addEventListener('click', function() {
+                assistantChat.classList.remove('active');
+            });
+            
+            function addBotMessage(message) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'message bot-message';
+                msgDiv.textContent = message;
+                chatMessages.appendChild(msgDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function addUserMessage(message) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'message user-message';
+                msgDiv.textContent = message;
+                chatMessages.appendChild(msgDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            sendMessage.addEventListener('click', function() {
+                const message = chatInput.value.trim();
+                if (message) {
+                    addUserMessage(message);
+                    chatInput.value = '';
+                    
+                    setTimeout(() => {
+                        const responses = [
+                            "The next MRT train arrives in 3 minutes at platform 2.",
+                            "There's a 5-minute delay on the LRT Kelana Jaya line due to signaling issues.",
+                            "You can transfer to the KTM line at KL Sentral station.",
+                            "The last monorail departs at 11:30 PM from Titiwangsa station.",
+                            "I can help you find the best route to your destination. Where are you going?"
+                        ];
+                        addBotMessage(responses[Math.floor(Math.random() * responses.length)]);
+                    }, 1000);
+                }
+            });
+            
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage.click();
+                }
+            });
+            
+            const notificationBell = document.getElementById('notificationBell');
+            const notificationPanel = document.getElementById('notificationPanel');
+            const notificationClose = document.getElementById('notificationClose');
+            
+            notificationBell.addEventListener('click', function() {
+                notificationPanel.classList.toggle('active');
+                assistantChat.classList.remove('active');
+            });
+            
+            notificationClose.addEventListener('click', function() {
+                notificationPanel.classList.remove('active');
+            });
+            
+            function simulateNotification() {
+                const notifications = [
+                    {
+                        title: "Delay on LRT Ampang Line",
+                        message: "15-minute delay between Masjid Jamek and Bandaraya due to technical issues",
+                        time: "Just now"
+                    },
+                    {
+                        title: "Service Resumed",
+                        message: "Normal service has resumed on the MRT Kajang Line",
+                        time: "30 min ago"
+                    },
+                    {
+                        title: "Weather Alert",
+                        message: "Heavy rain may cause delays on all lines this evening",
+                        time: "1 hour ago"
+                    }
+                ];
+                
+                const randomNotif = notifications[Math.floor(Math.random() * notifications.length)];
+                
+                const notifItem = document.createElement('div');
+                notifItem.className = 'notification-item';
+                notifItem.innerHTML = `
+                    <div class="notification-title">${randomNotif.title}</div>
+                    <div class="notification-message">${randomNotif.message}</div>
+                    <div class="notification-time"><i class="far fa-clock"></i> ${randomNotif.time}</div>
+                `;
+                
+                notificationPanel.insertBefore(notifItem, notificationPanel.firstChild);
+                
+                const badge = document.querySelector('.notification-badge');
+                if (badge) {
+                    badge.textContent = parseInt(badge.textContent) + 1;
+                }
+                
+                if (!notificationPanel.classList.contains('active')) {
+                    notificationBell.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        notificationBell.style.animation = '';
+                    }, 500);
+                }
+            }
+            
+            setInterval(simulateNotification, 30000);
+        });
+    </script>
+</body>
+</html>

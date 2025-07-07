@@ -1,0 +1,2286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetRealTrain - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0056b3;
+            --primary-dark: #003d82;
+            --secondary: #003366;
+            --accent: #00a8e8;
+            --accent-light: #e6f7ff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --mrt-color: #9E2896;
+            --lrt-color: #FF7F00;
+            --ktm-color: #5CB335;
+            --monorail-color: #E31E24;
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 80px;
+            --header-height: 70px;
+            --elevation-1: 0 1px 3px rgba(0,0,0,0.12);
+            --elevation-2: 0 4px 6px rgba(0,0,0,0.1);
+            --elevation-3: 0 10px 20px rgba(0,0,0,0.1);
+            --elevation-4: 0 20px 40px rgba(0,0,0,0.15);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            position: relative;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: var(--elevation-2);
+            transition: var(--transition);
+            z-index: 1000;
+            overflow-y: auto;
+            transform: translateX(0);
+        }
+        
+        .sidebar-collapsed {
+            transform: translateX(calc(-100% + var(--sidebar-collapsed-width)));
+            overflow: hidden;
+        }
+        
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+        
+        .logo i {
+            font-size: 1.5rem;
+        }
+        
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .toggle-sidebar:hover {
+            color: var(--primary);
+        }
+        
+        .sidebar-menu {
+            padding: 1.5rem 0;
+        }
+        
+        .menu-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--gray);
+            font-weight: 600;
+            padding: 0 1.5rem 0.5rem;
+            margin-top: 1rem;
+            white-space: nowrap;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--gray);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            white-space: nowrap;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background: var(--accent-light);
+            color: var(--primary);
+        }
+        
+        .menu-item.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+        }
+        
+        .menu-item i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+            margin-right: 1rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: var(--transition);
+        }
+        
+        .sidebar-collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+        
+        .header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: var(--elevation-1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            color: var(--secondary);
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .search-bar {
+            position: relative;
+        }
+        
+        .search-bar input {
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border-radius: 30px;
+            border: 1px solid var(--light-gray);
+            font-size: 0.9rem;
+            width: 250px;
+            transition: var(--transition);
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.1);
+        }
+        
+        .search-bar i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-name {
+            font-weight: 500;
+        }
+        
+        .notification-icon {
+            position: relative;
+            font-size: 1.2rem;
+            color: var(--gray);
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--elevation-1);
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--elevation-2);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-change {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .card-change.positive {
+            color: var(--success);
+        }
+        
+        .card-change.negative {
+            color: var(--danger);
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .card-icon.blue {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+        }
+        
+        .card-icon.green {
+            background: linear-gradient(135deg, #5CB335, #28a745);
+        }
+        
+        .card-icon.purple {
+            background: linear-gradient(135deg, #9E2896, #6f42c1);
+        }
+        
+        .card-icon.orange {
+            background: linear-gradient(135deg, #FF7F00, #fd7e14);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            border-radius: 2px;
+        }
+        
+        .train-status-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .train-status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--elevation-1);
+        }
+        
+        .train-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .train-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .train-number {
+            background: var(--light);
+            color: var(--primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .train-route {
+            position: relative;
+            padding: 1.5rem 0;
+        }
+        
+        .route-line {
+            height: 6px;
+            background: var(--light-gray);
+            position: relative;
+            margin: 0 50px;
+            border-radius: 3px;
+        }
+        
+        .route-line-progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 65%;
+            background: linear-gradient(to right, var(--success), var(--accent));
+            border-radius: 3px;
+            animation: progress 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes progress {
+            0% { width: 65%; }
+            100% { width: 68%; }
+        }
+        
+        .stations {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: -12px;
+        }
+        
+        .station {
+            position: relative;
+            text-align: center;
+            width: 80px;
+        }
+        
+        .station-dot {
+            width: 16px;
+            height: 16px;
+            background: var(--light-gray);
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
+        }
+        
+        .station.passed .station-dot {
+            background: var(--success);
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+        }
+        
+        .station.current .station-dot {
+            background: var(--accent);
+            box-shadow: 0 0 0 6px rgba(0, 168, 232, 0.2);
+            animation: pulse-blue 2s infinite;
+            transform: scale(1.2);
+        }
+        
+        @keyframes pulse-blue {
+            0% { box-shadow: 0 0 0 0 rgba(0, 168, 232, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 168, 232, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 168, 232, 0); }
+        }
+        
+        .station-name {
+            margin-top: 0.8rem;
+            font-size: 0.8rem;
+            color: var(--gray);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .station.passed .station-name {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .station.current .station-name {
+            color: var(--primary);
+            font-weight: 700;
+            transform: scale(1.1);
+        }
+        
+        .route-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .route-info-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 8px;
+        }
+        
+        .route-info-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+        
+        .route-info-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .route-info-value span {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--gray);
+            margin-left: 0.2rem;
+        }
+        
+        .train-details {
+            margin-top: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .detail-item i {
+            color: var(--primary);
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: var(--dark);
+            margin-left: 0.3rem;
+        }
+        
+        .crowd-indicator {
+            margin-top: 1.5rem;
+        }
+        
+        .crowd-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .crowd-title {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .crowd-level {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .crowd-level.low {
+            color: var(--success);
+        }
+        
+        .crowd-level.medium {
+            color: var(--warning);
+        }
+        
+        .crowd-level.high {
+            color: var(--danger);
+        }
+        
+        .crowd-bar {
+            height: 8px;
+            background: var(--light-gray);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .crowd-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--success), var(--warning), var(--danger));
+        }
+        
+        .map-container {
+            height: 400px;
+            background: var(--light-gray);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--elevation-1);
+        }
+        
+        .map-overlay {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: var(--elevation-1);
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .map-train-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .map-train-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .map-train-details h4 {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            color: var(--dark);
+        }
+        
+        .map-train-details p {
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .map-zoom-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .map-zoom-btn {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .map-zoom-btn:hover {
+            background: var(--light);
+        }
+        
+        .train-route-map {
+            width: 100%;
+            height: 100%;
+            background-color: #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .route-line-map {
+            position: absolute;
+            height: 6px;
+            background: var(--light-gray);
+            border-radius: 3px;
+            transform-origin: left center;
+        }
+        
+        .route-line-progress-map {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(to right, var(--success), var(--accent));
+            border-radius: 3px;
+            animation: progress 2s ease-in-out infinite alternate;
+        }
+        
+        .station-map {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--light-gray);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: var(--transition);
+            z-index: 2;
+        }
+        
+        .station-map.passed {
+            background: var(--success);
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+        }
+        
+        .station-map.current {
+            background: var(--accent);
+            box-shadow: 0 0 0 6px rgba(0, 168, 232, 0.2);
+            animation: pulse-blue 2s infinite;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        
+        .station-name-map {
+            position: absolute;
+            font-size: 0.7rem;
+            color: var(--gray);
+            font-weight: 500;
+            white-space: nowrap;
+            transform: translateX(-50%);
+            transition: var(--transition);
+        }
+        
+        .station-map.passed + .station-name-map {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .station-map.current + .station-name-map {
+            color: var(--primary);
+            font-weight: 700;
+            transform: translateX(-50%) scale(1.1);
+        }
+        
+        .train-icon-map {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            animation: pulse-blue 2s infinite;
+        }
+        
+        .ticket-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--elevation-1);
+            margin-bottom: 2rem;
+        }
+        
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .ticket-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .ticket-qr {
+            width: 150px;
+            height: 150px;
+            background: var(--light);
+            border-radius: 8px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            flex-direction: column;
+            padding: 1rem;
+        }
+        
+        .ticket-qr i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .ticket-qr-text {
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .ticket-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .ticket-detail {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .ticket-detail strong {
+            color: var(--dark);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+        
+        .ticket-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .ticket-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .ticket-btn.primary {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+        }
+        
+        .ticket-btn.secondary {
+            background: var(--light);
+            color: var(--primary);
+            border: 1px solid var(--light-gray);
+        }
+        
+        .ticket-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--elevation-2);
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .payment-method {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: var(--elevation-1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .payment-method:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--elevation-2);
+        }
+        
+        .payment-method.active {
+            border-color: var(--primary);
+            background: var(--accent-light);
+        }
+        
+        .payment-icon {
+            width: 50px;
+            height: 30px;
+            object-fit: contain;
+            margin-bottom: 0.5rem;
+        }
+        
+        .payment-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .topup-amounts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .amount-option {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: var(--elevation-1);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .amount-option:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--elevation-2);
+        }
+        
+        .amount-option.active {
+            border-color: var(--primary);
+            background: var(--accent-light);
+        }
+        
+        .amount-value {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .timetable-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--elevation-1);
+            margin-bottom: 2rem;
+        }
+        
+        .timetable-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .timetable-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .timetable-filter {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: none;
+            background: var(--light);
+            color: var(--gray);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .timetable th {
+            text-align: left;
+            padding: 0.8rem;
+            font-size: 0.8rem;
+            color: var(--gray);
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .timetable td {
+            padding: 0.8rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .timetable tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .train-line-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .train-line-badge.mrt {
+            background: rgba(158, 40, 150, 0.1);
+            color: var(--mrt-color);
+        }
+        
+        .train-line-badge.lrt {
+            background: rgba(255, 127, 0, 0.1);
+            color: var(--lrt-color);
+        }
+        
+        .train-line-badge.ktm {
+            background: rgba(92, 179, 53, 0.1);
+            color: var(--ktm-color);
+        }
+        
+        .train-line-badge.monorail {
+            background: rgba(227, 30, 36, 0.1);
+            color: var(--monorail-color);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.ontime {
+            background: rgba(0, 168, 232, 0.1);
+            color: var(--accent);
+        }
+        
+        .status-badge.delayed {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+        
+        .status-badge.arrived {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+        
+        .feedback-form {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--elevation-1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .rating-stars {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .star {
+            font-size: 1.5rem;
+            color: var(--light-gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .star.active {
+            color: #FFC107;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 168, 232, 0.3);
+        }
+        
+        .rewards-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--elevation-1);
+            margin-bottom: 2rem;
+        }
+        
+        .rewards-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .rewards-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .rewards-points {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .points-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .points-label {
+            font-size: 1rem;
+            color: var(--gray);
+        }
+        
+        .rewards-progress {
+            height: 8px;
+            background: var(--light-gray);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            width: 65%;
+        }
+        
+        .rewards-next {
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-align: center;
+        }
+        
+        .rewards-next strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .rewards-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .reward-btn {
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .reward-btn.primary {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+        }
+        
+        .reward-btn.secondary {
+            background: var(--light);
+            color: var(--primary);
+            border: 1px solid var(--light-gray);
+        }
+        
+        .reward-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--elevation-2);
+        }
+        
+        .rewards-history {
+            margin-top: 1.5rem;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-detail {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .history-points {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .history-date {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        .train-alert {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--elevation-1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .alert-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .alert-icon.ontime {
+            background: var(--success);
+        }
+        
+        .alert-icon.delayed {
+            background: var(--danger);
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .alert-message {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .current-time {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            box-shadow: var(--elevation-1);
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 1000;
+        }
+        
+        @media (max-width: 1200px) {
+            .train-status-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .route-info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .route-info-item:last-child {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1100;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .sidebar-collapsed {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .search-bar input {
+                width: 200px;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 1rem;
+            }
+            
+            .page-title {
+                font-size: 1.2rem;
+            }
+            
+            .search-bar {
+                display: none;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .ticket-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .ticket-actions {
+                flex-direction: column;
+            }
+            
+            .payment-methods {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .topup-amounts {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            }
+            
+            .map-overlay {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .map-zoom-controls {
+                align-self: flex-end;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .route-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .route-info-item:last-child {
+                grid-column: span 1;
+            }
+            
+            .station {
+                width: 60px;
+            }
+            
+            .station-name {
+                font-size: 0.7rem;
+            }
+            
+            .timetable-filter {
+                flex-wrap: wrap;
+            }
+            
+            .payment-methods {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            
+            .topup-amounts {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-train"></i>
+                <span>NetRealTrain</span>
+            </div>
+            <button class="toggle-sidebar" id="toggleSidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="menu-title">Main</div>
+            <a href="#" class="menu-item active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <div class="menu-title">Services</div>
+            <a href="#" class="menu-item">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Buy Ticket</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-wallet"></i>
+                <span>Topup</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Timetable</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-train"></i>
+                <span>Train Status</span>
+            </a>
+            
+            <div class="menu-title">Information</div>
+            <a href="#" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>Crowd Info</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-clock"></i>
+                <span>ETA Prediction</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Live Map</span>
+            </a>
+            
+            <div class="menu-title">Account</div>
+            <a href="#" class="menu-item">
+                <i class="fas fa-gift"></i>
+                <span>Reward Points</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-comment-alt"></i>
+                <span>Feedback</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Dashboard</h1>
+            </div>
+            
+            <div class="header-right">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <div class="notification-badge">3</div>
+                </div>
+                
+                <div class="user-profile">
+                    <div class="profile-img">
+                        <img src="profile.png" alt="User">
+                    </div>
+                    <span class="profile-name">User</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Active Trains</div>
+                            <div class="card-value">1,428</div>
+                            <div class="card-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                5.2% from yesterday
+                            </div>
+                        </div>
+                        <div class="card-icon blue">
+                            <i class="fas fa-train"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Daily Passengers</div>
+                            <div class="card-value">2.4M</div>
+                            <div class="card-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                3.8% from yesterday
+                            </div>
+                        </div>
+                        <div class="card-icon green">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">On-Time Rate</div>
+                            <div class="card-value">98.7%</div>
+                            <div class="card-change negative">
+                                <i class="fas fa-arrow-down"></i>
+                                0.5% from yesterday
+                            </div>
+                        </div>
+                        <div class="card-icon purple">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Revenue Today</div>
+                            <div class="card-value">RM 1.2M</div>
+                            <div class="card-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                7.1% from yesterday
+                            </div>
+                        </div>
+                        <div class="card-icon orange">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="train-alert">
+                <div class="alert-icon delayed">
+                    <i class="fas fa-exclamation"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">Your train is delayed</div>
+            <div class="alert-message">
+                Expected arrival at Phileo Damansara: 08:42 (delayed by 12 minutes due to signaling issues)
+                <br>
+                <span id="countdownTimer" style="font-weight: 600; color: var(--primary);"></span>
+            </div>
+                </div>
+            </div>
+            
+            <h2 class="section-title">Your Current Journey</h2>
+            
+            <div class="train-status-container">
+                <div class="train-status-card">
+                    <div class="train-header">
+                        <div class="train-title">
+                            <i class="fas fa-subway" style="color: var(--mrt-color);"></i>
+                            MRT Kajang Line
+                        </div>
+                        <div class="train-number">Train 402</div>
+                    </div>
+                    
+                    <div class="train-route">
+                        <div class="route-line">
+                            <div class="route-line-progress"></div>
+                        </div>
+                        <div class="stations">
+                            <div class="station passed">
+                                <div class="station-dot"></div>
+                                <div class="station-name">Kwasa Damansara</div>
+                            </div>
+                            <div class="station passed">
+                                <div class="station-dot"></div>
+                                <div class="station-name">Kota Damansara</div>
+                            </div>
+                            <div class="station passed">
+                                <div class="station-dot"></div>
+                                <div class="station-name">Surian</div>
+                            </div>
+                            <div class="station passed">
+                                <div class="station-dot"></div>
+                                <div class="station-name">Mutiara Damansara</div>
+                            </div>
+                            <div class="station passed">
+                                <div class="station-dot"></div>
+                                <div class="station-name">Bandar Utama</div>
+                            </div>
+                            <div class="station current">
+                                <div class="station-dot"></div>
+                                <div class="station-name">Phileo Damansara</div>
+                            </div>
+                            <div class="station next">
+                                <div class="station-dot"></div>
+                                <div class="station-name">Pusat Bandar</div>
+                            </div>
+                            <div class="station">
+                                <div class="station-dot"></div>
+                                <div class="station-name">Semantan</div>
+                            </div>
+                            <div class="station">
+                                <div class="station-dot"></div>
+                                <div class="station-name">Muzium Negara</div>
+                            </div>
+                        </div>
+                        
+                        <div class="route-info">
+                            <div class="route-info-item">
+                                <div class="route-info-label">Next Station</div>
+                                <div class="route-info-value">Pusat Bandar</div>
+                            </div>
+                            <div class="route-info-item">
+                                <div class="route-info-label">Arriving In</div>
+                                <div class="route-info-value">03:22 <span>min</span></div>
+                            </div>
+                            <div class="route-info-item">
+                                <div class="route-info-label">Final Destination</div>
+                                <div class="route-info-value">Kajang</div>
+                            </div>
+                        </div>
+                        
+                        <div class="train-details">
+                            <div class="detail-item">
+                                <i class="fas fa-users"></i>
+                                <span>Crowd: <span class="detail-value">Medium</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Delay: <span class="detail-value">12 min</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-temperature-low"></i>
+                                <span>Temp: <span class="detail-value">24°C</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-wifi"></i>
+                                <span>WiFi: <span class="detail-value">Good</span></span>
+                            </div>
+                        </div>
+                        
+                        <div class="crowd-indicator">
+                            <div class="crowd-header">
+                                <div class="crowd-title">Crowd Level</div>
+                                <div class="crowd-level medium">Medium (65%)</div>
+                            </div>
+                            <div class="crowd-bar">
+                                <div class="crowd-bar-fill" style="width: 65%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="map-container">
+                    <div class="train-route-map" id="trainRouteMap"></div>
+                    <div class="map-overlay">
+                        <div class="map-train-info">
+                            <div class="map-train-icon">
+                                <i class="fas fa-subway"></i>
+                            </div>
+                            <div class="map-train-details">
+                                <h4>MRT Kajang Line - Train 402</h4>
+                                <p><i class="fas fa-clock"></i> Next station in 03:22 min (Delayed)</p>
+                            </div>
+                        </div>
+                        <div class="map-zoom-controls">
+                            <div class="map-zoom-btn"><i class="fas fa-plus"></i></div>
+                            <div class="map-zoom-btn"><i class="fas fa-minus"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 class="section-title">Your Ticket</h2>
+            
+            <div class="ticket-container">
+                <div class="ticket-header">
+                    <div class="ticket-title">MRT Kajang Line - Single Trip</div>
+                    <div class="status-badge ontime">
+                        <i class="fas fa-check-circle"></i> Active
+                    </div>
+                </div>
+                
+                <div class="ticket-qr">
+                    <i class="fas fa-qrcode"></i>
+                    <div class="ticket-qr-text">Scan this QR code at the gate</div>
+                </div>
+                
+                <div class="ticket-details">
+                    <div class="ticket-detail">
+                        <strong>From</strong>
+                        Phileo Damansara
+                    </div>
+                    <div class="ticket-detail">
+                        <strong>To</strong>
+                        Kajang
+                    </div>
+                    <div class="ticket-detail">
+                        <strong>Date</strong>
+                        15 Jun 2025
+                    </div>
+                    <div class="ticket-detail">
+                        <strong>Time</strong>
+                        08:30 AM
+                    </div>
+                    <div class="ticket-detail">
+                        <strong>Price</strong>
+                        RM 4.50
+                    </div>
+                    <div class="ticket-detail">
+                        <strong>Valid Until</strong>
+                        15 Jun 2025, 11:30 PM
+                    </div>
+                </div>
+                
+                <div class="ticket-actions">
+                    <button class="ticket-btn primary">
+                        <i class="fas fa-share-alt"></i> Share
+                    </button>
+                    <button class="ticket-btn secondary">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+            </div>
+            
+            <h2 class="section-title">Topup Options</h2>
+            
+            <div class="ticket-container">
+                <div class="ticket-header">
+                    <div class="ticket-title">Select Payment Method</div>
+                </div>
+                
+                <div class="payment-methods">
+                    <div class="payment-method active" data-method="tng">
+                        <img src="tng.png" alt="Touch 'n Go" class="payment-icon">
+                        <div class="payment-name">Pay TnG</div>
+                    </div>
+                    <div class="payment-method" data-method="telco">
+                        <img src="telco.jpg" alt="Telco" class="payment-icon">
+                        <div class="payment-name">Pay Telco</div>
+                    </div>
+                    <div class="payment-method" data-method="ewallet">
+                        <img src="ewallet.png" alt="E-Wallet" class="payment-icon">
+                        <div class="payment-name">Pay E-Wallet</div>
+                    </div>
+                </div>
+
+                <!-- Sub-options container for payment methods -->
+                <div class="payment-sub-options" style="margin-top: 1rem;">
+                    <h3 id="subOptionsTitle" style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--dark); display: none;"></h3>
+                    <!-- Telco options -->
+                    <div class="sub-options" data-sub-options="telco" style="display: none;">
+                        <div class="payment-method">
+                            <div class="payment-name">CelcomDigi</div>
+                        </div>
+                        <div class="payment-method">
+                            <div class="payment-name">Umobile</div>
+                        </div>
+                        <div class="payment-method">
+                            <div class="payment-name">Maxis</div>
+                        </div>
+                    </div>
+                    <!-- E-Wallet options -->
+                    <div class="sub-options" data-sub-options="ewallet" style="display: none;">
+                        <div class="payment-method">
+                            <div class="payment-name">GrabPay</div>
+                        </div>
+                        <div class="payment-method">
+                            <div class="payment-name">ShoppePay</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ticket-header" style="margin-top: 1.5rem;">
+                    <div class="ticket-title">Select Amount</div>
+                </div>
+                
+                <div class="topup-amounts">
+                    <div class="amount-option">
+                        <div class="amount-value">RM 10</div>
+                    </div>
+                    <div class="amount-option active">
+                        <div class="amount-value">RM 20</div>
+                    </div>
+                    <div class="amount-option">
+                        <div class="amount-value">RM 50</div>
+                    </div>
+                    <div class="amount-option">
+                        <div class="amount-value">RM 100</div>
+                    </div>
+                    <div class="amount-option">
+                        <div class="amount-value">Other</div>
+                    </div>
+                </div>
+                
+                <div class="ticket-actions" style="margin-top: 1.5rem;">
+                    <button class="ticket-btn primary" style="flex: 1;">
+                        <i class="fas fa-credit-card"></i> Pay Now
+                    </button>
+                </div>
+            </div>
+            
+            <h2 class="section-title">Timetable</h2>
+            
+            <div class="timetable-container">
+                <div class="timetable-header">
+                    <div class="timetable-title">MRT Kajang Line</div>
+                    <div class="timetable-filter">
+                        <button class="filter-btn active">All</button>
+                        <button class="filter-btn">Weekday</button>
+                        <button class="filter-btn">Weekend</button>
+                    </div>
+                </div>
+                
+                <table class="timetable">
+                    <thead>
+                        <tr>
+                            <th>Departure</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>08:00</td>
+                            <td>Kwasa Damansara</td>
+                            <td>Kajang</td>
+                            <td><span class="status-badge arrived">Arrived</span></td>
+                        </tr>
+                        <tr>
+                            <td>08:15</td>
+                            <td>Kwasa Damansara</td>
+                            <td>Kajang</td>
+                            <td><span class="status-badge ontime">On Time</span></td>
+                        </tr>
+                        <tr>
+                            <td>08:30</td>
+                            <td>Kwasa Damansara</td>
+                            <td>Kajang</td>
+                            <td><span class="status-badge delayed">Delayed 12 min</span></td>
+                        </tr>
+                        <tr>
+                            <td>08:45</td>
+                            <td>Kwasa Damansara</td>
+                            <td>Kajang</td>
+                            <td><span class="status-badge delayed">Delayed 5 min</span></td>
+                        </tr>
+                        <tr>
+                            <td>09:00</td>
+                            <td>Kwasa Damansara</td>
+                            <td>Kajang</td>
+                            <td><span class="status-badge ontime">On Time</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h2 class="section-title">Feedback</h2>
+            
+            <div class="feedback-form">
+                <div class="form-group">
+                    <label class="form-label">Your Experience</label>
+                    <div class="rating-stars">
+                        <i class="fas fa-star star active"></i>
+                        <i class="fas fa-star star active"></i>
+                        <i class="fas fa-star star active"></i>
+                        <i class="fas fa-star star"></i>
+                        <i class="fas fa-star star"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Comments</label>
+                    <textarea class="form-control form-textarea" placeholder="Tell us about your experience..."></textarea>
+                </div>
+                
+                <button class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Submit Feedback
+                </button>
+            </div>
+            
+            <h2 class="section-title">Reward Points</h2>
+            
+            <div class="rewards-card">
+                <div class="rewards-header">
+                    <div class="rewards-title">Your Points</div>
+                    <div class="status-badge ontime">
+                        <i class="fas fa-crown"></i> Gold Member
+                    </div>
+                </div>
+                
+                <div class="rewards-points">
+                    <div class="points-value">1,250</div>
+                    <div class="points-label">Points</div>
+                </div>
+                
+                <div class="rewards-progress">
+                    <div class="progress-fill" style="width: 65%;"></div>
+                </div>
+                
+                <div class="rewards-next">
+                    <strong>350 points</strong> to next reward level
+                </div>
+                
+                <div class="rewards-actions">
+                    <button class="reward-btn primary">
+                        <i class="fas fa-gift"></i> Redeem
+                    </button>
+                    <button class="reward-btn secondary">
+                        <i class="fas fa-question-circle"></i> How to Earn
+                    </button>
+                    <button class="reward-btn secondary">
+                        <i class="fas fa-history"></i> History
+                    </button>
+                </div>
+                
+                <div class="rewards-history">
+                    <div class="history-item">
+                        <div class="history-detail">
+                            <div>Daily Commute Bonus</div>
+                            <div class="history-date">Today, 08:30</div>
+                        </div>
+                        <div class="history-points">+50 pts</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-detail">
+                            <div>Weekend Travel</div>
+                            <div class="history-date">12 Jun 2025</div>
+                        </div>
+                        <div class="history-points">+100 pts</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-detail">
+                            <div>Feedback Submitted</div>
+                            <div class="history-date">10 Jun 2025</div>
+                        </div>
+                        <div class="history-points">+20 pts</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="current-time" id="currentTime"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleSidebar = document.getElementById('toggleSidebar');
+            const sidebar = document.getElementById('sidebar');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            
+            toggleSidebar.addEventListener('click', function() {
+                sidebar.classList.toggle('sidebar-collapsed');
+                const icon = toggleSidebar.querySelector('i');
+                if (sidebar.classList.contains('sidebar-collapsed')) {
+                    icon.classList.remove('fa-chevron-left');
+                    icon.classList.add('fa-chevron-right');
+                } else {
+                    icon.classList.remove('fa-chevron-right');
+                    icon.classList.add('fa-chevron-left');
+                }
+            });
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            function updateRouteMap() {
+                const mapContainer = document.getElementById('trainRouteMap');
+                mapContainer.innerHTML = '';
+                
+                const stations = [
+                    { name: 'Kwasa Damansara', x: 5, y: 50 },
+                    { name: 'Kota Damansara', x: 15, y: 50 },
+                    { name: 'Surian', x: 25, y: 50 },
+                    { name: 'Mutiara Damansara', x: 35, y: 50 },
+                    { name: 'Bandar Utama', x: 45, y: 50 },
+                    { name: 'Phileo Damansara', x: 55, y: 50 },
+                    { name: 'Pusat Bandar Damansara', x: 65, y: 50 },
+                    { name: 'Semantan', x: 75, y: 50 },
+                    { name: 'Muzium Negara', x: 85, y: 50 }
+                ];
+                
+                const routeLine = document.createElement('div');
+                routeLine.className = 'route-line-map';
+                routeLine.style.width = '90%';
+                routeLine.style.left = '5%';
+                routeLine.style.top = '50%';
+                routeLine.style.backgroundColor = 'rgba(158, 40, 150, 0.2)';
+                
+                const routeProgress = document.createElement('div');
+                routeProgress.className = 'route-line-progress-map';
+                routeProgress.style.width = '65%';
+                routeProgress.style.backgroundColor = 'var(--mrt-color)';
+                
+                routeLine.appendChild(routeProgress);
+                mapContainer.appendChild(routeLine);
+                
+                stations.forEach((station, index) => {
+                    const stationDot = document.createElement('div');
+                    stationDot.className = 'station-map';
+                    stationDot.style.left = `${station.x}%`;
+                    stationDot.style.top = `${station.y}%`;
+                    
+                    if (index < 5) {
+                        stationDot.classList.add('passed');
+                    } else if (index === 5) {
+                        stationDot.classList.add('current');
+                    }
+                    
+                    const stationName = document.createElement('div');
+                    stationName.className = 'station-name-map';
+                    stationName.textContent = station.name;
+                    stationName.style.left = `${station.x}%`;
+                    stationName.style.top = `${station.y + 5}%`;
+                    
+                    mapContainer.appendChild(stationDot);
+                    mapContainer.appendChild(stationName);
+                });
+                
+                const trainIcon = document.createElement('div');
+                trainIcon.className = 'train-icon-map';
+                trainIcon.style.left = `${stations[5].x}%`;
+                trainIcon.style.top = `${stations[5].y}%`;
+                trainIcon.style.backgroundColor = 'var(--mrt-color)';
+                trainIcon.innerHTML = '<i class="fas fa-subway"></i>';
+                mapContainer.appendChild(trainIcon);
+            }
+            
+            updateRouteMap();
+            
+            const mainPaymentMethods = document.querySelectorAll('.payment-methods > .payment-method');
+            mainPaymentMethods.forEach(method => {
+                method.addEventListener('click', function() {
+                    mainPaymentMethods.forEach(m => m.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Show sub-options based on selected payment method
+                    const selectedMethod = this.getAttribute('data-method');
+                    const subOptionsContainers = document.querySelectorAll('.sub-options');
+                    const subOptionsTitle = document.getElementById('subOptionsTitle');
+
+                    if (selectedMethod === 'telco') {
+                        subOptionsTitle.textContent = 'Select Telco Provider';
+                        subOptionsTitle.style.display = 'block';
+                    } else if (selectedMethod === 'ewallet') {
+                        subOptionsTitle.textContent = 'Select E-Wallet Provider';
+                        subOptionsTitle.style.display = 'block';
+                    } else {
+                        subOptionsTitle.style.display = 'none';
+                    }
+
+                    subOptionsContainers.forEach(container => {
+                        if (container.getAttribute('data-sub-options') === selectedMethod) {
+                            container.style.display = 'flex';
+                            container.style.gap = '1rem';
+                        } else {
+                            container.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // Add click handlers for sub-options payment methods (telco, ewallet)
+            const subOptionsMethods = document.querySelectorAll('.sub-options .payment-method');
+            subOptionsMethods.forEach(subMethod => {
+                subMethod.addEventListener('click', function(event) {
+                    // Remove active class from sibling sub-options
+                    const siblings = this.parentElement.querySelectorAll('.payment-method');
+                    siblings.forEach(sib => sib.classList.remove('active'));
+                    // Add active class to clicked sub-option
+                    this.classList.add('active');
+
+                    // Prevent event bubbling to avoid resetting main payment method
+                    event.stopPropagation();
+                });
+            });
+            
+            const amountOptions = document.querySelectorAll('.amount-option');
+            amountOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    amountOptions.forEach(o => o.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                star.addEventListener('click', function() {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.classList.add('active');
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                });
+            });
+            
+            function updateCurrentTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { hour12: false });
+                const dateString = now.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                document.getElementById('currentTime').textContent = `${dateString} ${timeString}`;
+            }
+            
+            setInterval(updateCurrentTime, 1000);
+            updateCurrentTime();
+            
+            function simulateTrainMovement() {
+                const stations = document.querySelectorAll('.stations .station');
+                let currentIndex = Array.from(stations).findIndex(s => s.classList.contains('current'));
+                
+                if (currentIndex >= 0 && currentIndex < stations.length - 1) {
+                    stations[currentIndex].classList.remove('current');
+                    stations[currentIndex].classList.add('passed');
+                    
+                    if (currentIndex + 1 < stations.length) {
+                        stations[currentIndex + 1].classList.add('current');
+                        if (currentIndex + 2 < stations.length) {
+                            stations[currentIndex + 2].classList.add('next');
+                        }
+                        if (currentIndex > 0) {
+                            stations[currentIndex - 1].classList.remove('next');
+                        }
+                    }
+                    
+                    const progress = (currentIndex + 1) / (stations.length - 1) * 100;
+                    document.querySelector('.route-line-progress').style.width = `${progress}%`;
+                    document.querySelector('.route-info-item:nth-child(2) .route-info-value').innerHTML = `${Math.floor(Math.random() * 2) + 1}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')} <span>min</span>`;
+
+                    // Update train delay countdown
+                    updateTrainDelayCountdown();
+                } else if (currentIndex === stations.length - 1) {
+                    stations[currentIndex].classList.remove('current');
+                    stations[currentIndex].classList.add('passed');
+                    
+                    setTimeout(() => {
+                        stations.forEach((s, i) => {
+                            s.classList.remove('passed', 'current', 'next');
+                            if (i === 0) s.classList.add('current');
+                            if (i === 1) s.classList.add('next');
+                        });
+                        document.querySelector('.route-line-progress').style.width = '0%';
+                    }, 3000);
+                }
+            }
+            
+            setInterval(simulateTrainMovement, 15000);
+
+            // Update train delay countdown every second
+            function updateTrainDelayCountdown() {
+                const countdownTimer = document.getElementById('countdownTimer');
+                if (!countdownTimer) return;
+
+                const alertMessage = document.querySelector('.train-alert .alert-message');
+                if (!alertMessage) return;
+
+                const regex = /Expected arrival at [^:]+: (\d{2}):(\d{2})/;
+                const match = alertMessage.textContent.match(regex);
+                if (!match) return;
+
+                const expectedHour = parseInt(match[1], 10);
+                const expectedMinute = parseInt(match[2], 10);
+
+                const now = new Date();
+                const expectedTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), expectedHour, expectedMinute, 0);
+
+                let diffMs = expectedTime - now;
+                if (diffMs < 0) {
+                    // If expected time is past, assume next day
+                    expectedTime.setDate(expectedTime.getDate() + 1);
+                    diffMs = expectedTime - now;
+                }
+
+                const diffMinutes = Math.floor(diffMs / 60000);
+                const diffSeconds = Math.floor((diffMs % 60000) / 1000);
+
+                if (diffMs <= 0) {
+                    countdownTimer.textContent = "Arriving now";
+                } else {
+                    countdownTimer.textContent = `Arriving in ${diffMinutes}m ${diffSeconds}s`;
+                }
+            }
+
+            setInterval(updateTrainDelayCountdown, 1000);
+        });
+    </script>
+</body>
+</html>
