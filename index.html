@@ -666,24 +666,45 @@
         
         .stations {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             position: relative;
-            margin-top: -12px;
+            padding-left: 20px;
+            margin-top: 0;
+            gap: 1.5rem;
+            padding-bottom: 0;
+            overflow-x: visible;
+        }
+        
+        .stations::before {
+            content: "";
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--light-gray);
+            border-radius: 1px;
         }
         
         .station {
             position: relative;
-            text-align: center;
-            width: 80px;
+            width: auto;
+            text-align: left;
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
         
         .station-dot {
-            width: 20px;
-            height: 20px;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
             background: var(--light-gray);
             border-radius: 50%;
-            margin: 0 auto;
-            position: relative;
             z-index: 2;
             transition: var(--transition);
         }
@@ -697,7 +718,7 @@
             background: var(--accent);
             box-shadow: 0 0 0 8px rgba(0, 168, 232, 0.2);
             animation: pulse-blue 2s infinite;
-            transform: scale(1.2);
+            transform: translateY(-50%) scale(1.2);
         }
         
         @keyframes pulse-blue {
@@ -707,11 +728,22 @@
         }
         
         .station-name {
-            margin-top: 0.8rem;
-            font-size: 0.9rem;
-            color: var(--gray);
-            font-weight: 500;
-            transition: var(--transition);
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 700;
+            text-shadow: 0 0 3px rgba(255,255,255,0.8);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .station:nth-child(odd) .station-name {
+            order: -1;
+            margin-bottom: 0.3rem;
+        }
+        
+        .station:nth-child(even) .station-name {
+            order: 1;
+            margin-top: 0.3rem;
         }
         
         .station.passed .station-name {
