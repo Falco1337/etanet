@@ -3218,43 +3218,36 @@
             
             .stations {
                 display: flex;
-                flex-direction: column;
-                position: relative;
-                padding-left: 20px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 0.5rem;
                 margin-top: 0;
-                gap: 1.5rem;
-                padding-bottom: 0;
-                overflow-x: visible;
+                gap: 1rem;
+                position: relative;
+                flex-wrap: nowrap;
             }
             
             .stations::before {
-                content: "";
-                position: absolute;
-                left: 10px;
-                top: 0;
-                bottom: 0;
-                width: 2px;
-                background: var(--light-gray);
-                border-radius: 1px;
+                display: none;
             }
             
             .station {
-                position: relative;
-                width: auto;
-                text-align: left;
-                padding-left: 20px;
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
+                flex: 0 0 auto;
+                width: 50px;
+                min-width: 50px;
+                text-align: center;
+                padding-left: 0;
+                display: block;
             }
             
             .station-dot {
-                position: absolute;
-                left: 0;
-                top: 50%;
-                transform: translateY(-50%);
+                position: relative;
+                left: auto;
+                top: auto;
+                transform: none;
                 width: 14px;
                 height: 14px;
+                margin: 0 auto;
                 background: var(--light-gray);
                 border-radius: 50%;
                 z-index: 2;
@@ -3270,26 +3263,27 @@
                 background: var(--accent);
                 box-shadow: 0 0 0 8px rgba(0, 168, 232, 0.2);
                 animation: pulse-blue 2s infinite;
-                transform: translateY(-50%) scale(1.2);
+                transform: scale(1.2);
             }
             
             .station-name {
-                font-size: 0.8rem;
+                font-size: 0.65rem;
+                white-space: nowrap;
+                margin-top: 0.4rem;
                 color: var(--primary);
                 font-weight: 700;
                 text-shadow: 0 0 3px rgba(255,255,255,0.8);
                 margin: 0;
                 padding: 0;
+                max-width: 50px;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             
-            .station:nth-child(odd) .station-name {
-                order: -1;
-                margin-bottom: 0.3rem;
-            }
-            
+            .station:nth-child(odd) .station-name,
             .station:nth-child(even) .station-name {
-                order: 1;
-                margin-top: 0.3rem;
+                order: 0;
+                margin: 0;
             }
             
             .map-overlay {
